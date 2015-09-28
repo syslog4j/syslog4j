@@ -1,0 +1,414 @@
+--------------------------------------------------------------------------
+Document: Syslog4j CHANGELOG.txt
+Version:  $Id: CHANGELOG.txt,v 1.74 2011/01/23 20:49:09 cvs Exp $
+URL:      http://www.syslog4j.org/
+--------------------------------------------------------------------------
+Version 0.9.46 (1/23/2011)
++ Added Syslog.setSuppressRuntimeExceptions(boolean) and
+  SyslogServer.setSuppressRuntimeExceptions(boolean) - default false -
+  to allow some methods to return null instead of throwing exceptions
+  (Thanks, Dan!)
++ Added "UseStructuredData" parameter to Syslog4jAppenderSkeleton in order
+  to be able to turn on RFC 5424 when using Syslog4j with Log4j
+  (Thanks, Francesco!)
++ Added missing "LocalName" parameter to Syslog4jAppenderSkeleton
++ JUnit test improvements
+--------------------------------------------------------------------------
+Version 0.9.45 (1/10/2011)
++ Fixed Unicode-related length problem in AbstractSyslog.write(..)
+  (Thanks, Anton!)
++ After some review, introduced prerequisite of Joda Time library
+  for Structured Syslog (RFC 5424) messages; changes made to
+  StructuredSyslogMessageProcessor, SyslogServerConfigIF, 
+  AbstractSyslogServer, AbstractSyslogServerConfig, and
+  StructuredSyslogServerEvent (Thanks, Maria and Jan!)
++ RFC3339TimestampUtility class removed
++ Fixed host parsing in StructuredSyslogServerEvent (thanks,
+  Lennart!)
++ Fixed facility/level computation in SyslogServerEvent (thanks,
+  Lennart!)
++ JUnit test improvements; 83.2% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.44 (11/28/2010)
++ Refactored SyslogServerEvent, removing System.arraycopy(..) call from
+  every instance and allowing construction using both String and byte[];
+  should reduce memory/garbage collection footprint
++ Removed check in TCPNetSyslogWriter for "software caused" Exception;
+  now will attempt to send again
++ Added TCPNetSyslogServerConfigIF.setTimeout(..) to close connections
+  after specified idle time; defaults to no timeout (0)
++ Added timeout boolean to
+  SyslogServerSessionEventHandlerIF.sessionClosed(..)
++ Modified UnixSyslog to use native close(fd) instead of shutdown(fd,how)
++ Modified UnixSyslog to use ByteBuffer instead of byte[] in write(..)
++ JUnit test improvements; 83.1% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.43 (11/11/2010)
++ IMPORTANT TO THOSE USING THE SyslogServer IMPLEMENTATION: Created
+  SyslogServerSessionEventHandlerIF and
+  SyslogServerSessionlessEventHandlerIF; use these instead of 
+  SyslogServerEventHandlerIF
++ Improved session handling within the SyslogServerSessionEventHandlerIF
++ JUnit test improvements; 82.5% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.42 (10/29/2010)
++ Added isUseDaemonThread() and setUseDaemonThread(..) to
+  AbstractSyslogConfigIF and ServerConfigIF; defaults to true,
+  which means SyslogWriter (used by TCP Syslog4j protocol)
+  and SyslogServer implementations use Daemon-style threads
+  and will now automatically close on JVM exit
++ Added getThreadPriority() and setThreadPriority(..) to
+  AbstractSyslogConfigIF and ServerConfigIF; defaults to -1 (no
+  priority will be set)
++ Added getFreshConnectionInterval() and setFreshConnectionInterval(..)
+  to TCPNetSyslogConfig which closes TCP/IP client sockets and
+  reopens "fresh" ones after the provided interval has passed between
+  log entries; useful for some firewall and load-balancing environments;
+  defaults to -1 (behavior disabled)
++ Added Syslog.destroyInstance(SyslogIF) and
+  SyslogServer.destroyInstance(SyslogServerIF) methods
++ Added SyslogServerEventIF.isHostStrippedFromMessage() to indicate
+  that the host name provided is the message is the same as the source
+  system and was (therefore) stripped from the message
++ JUnit test improvements; 81.4% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.41 (10/28/2010)
++ Removed SyslogIF parameter from verify(..) methods introduced
+  in 0.9.40 for SyslogMessageModifier implementations
++ Improved SyslogServerEvent for better host address and host name
+  matching/parsing
++ Added destroyInstance(..) to SyslogServer (thanks, Dan!)
++ JUnit test improvements; 81.1% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.40 (10/27/2010)
++ Added verify(..) methods in the SyslogMessageModifier implementations
+  which can be used to verify signatures, hashes, and checksum values
++ Removed extraneous SyslogConfigIF parameter to SyslogMessageModifier
+  implementations (since the first parameter is SyslogIF and its
+  getConfig() method can be used)
++ Reworked SyslogServerEventHandlerIF to allow support for
+  keeping session information (when used by TCP-based protocols)
++ Miscellaneous bug fixes and corrections, including small bug in
+  AbstractSyslogMessageModifierConfig.setPrefix(..)
++ JUnit test improvements; 80.8% instruction code coverage maintained
+  (EclEmma) (note: this value obtained when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.39 (10/24/2010)
++ Added maxQueueSize parameter to Syslog4j protocol config objects in
+  order to prevent memory leaks caused by high-volume clients; defaults
+  to -1 (no maximum queue size); any messages attempted to be logged
+  beyond the maximum queue size will utilize the BackLog capability;
+  tip: add NullSyslogBackLogHandler.INSTANCE if messages should just
+  be dropped (thanks to Avishay for the idea and sample code!)
++ Switched all try { Thread.sleep(..) } blocks from Syslog4j code base
+  to newly created SyslogUtility.sleep(long) convenience method
++ Updated new versions of 3rd party JARs (jar-3.2.7, log4j-1.2.16, and
+  commons-pool-1.5.5)
++ Modified AbstractSyslogConfig to initialize(..) BackLogHandler
+  instances upon calling addBackLogHandler(..) and
+  insertBackLogHandler(..)
++ Minor code cleanup in UnixSyslog
++ JUnit test improvements; 80.8% instruction code coverage maintained
+  (EclEmma) (note: this value obtained when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.38 (09/11/2010)
++ Patched StructuredSyslogMessage to better adhere to RFC 5424 when
+  dealing with empty String values (Thanks, Manish!)
++ JUnit test improvements; 80.8% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.37 (06/26/2010)
++ Added HTMLEntityEscapeSyslogModifier to ensure HTML-based log
+  messages are escaped before being received by the server; this prevents
+  malicious log entries from executing code on browsers when using
+  poorly-written log viewer software (Thanks for the idea, Rob!)
++ JUnit test improvements; 80.7% instruction code coverage (EclEmma)
+  (when executed on MacOSX)
+--------------------------------------------------------------------------
+Version 0.9.36 (06/13/2010)
++ BUG FIX: Modified UnixSyslog to pass in a Memory object to openlog(..)
+  instead of a String value (Thanks, Maik!)
+--------------------------------------------------------------------------
+Version 0.9.35 (03/25/2010)
++ BUG FIX: Modified TCPNetSyslogWriter's shutdown() method to properly
+  check for null or closed sockets, take 2 (Thanks, Vladimir!)
+--------------------------------------------------------------------------
+Version 0.9.34 (03/19/2010)
++ BUG FIX: Modified TCPNetSyslogWriter's shutdown() method to properly
+  check for null or closed sockets (Thanks, Vladimir!)
+--------------------------------------------------------------------------
+Version 0.9.33 (02/27/2010)
++ BUG FIX: Modified UnixSocketSyslog to create the socket upon first
+  write; prior to this version, the stock "unix_socket" protocol's
+  configuration could not be modified
++ Successfully tested Syslog4j's unix_socket and unix_syslog protocols
+  on MacOSX version 10.6.2
++ JUnit test improvements; 78.4% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.32 (02/10/2010)
++ BUG FIX: AbstractSyslog.write(SyslogMessageProcessorIF,int,String)
+  modified to properly handle Unicode messages (thanks, Brett!)
++ SyslogIF modified with getter/setter for
+  StructuredSyslogMessageProcessor
++ Improvements to AbstractSyslog.log(..) methods to more properly
+  handle StructuredSyslogMessageProcessor configurations
++ JUnit test improvements; 78.3% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.31 (02/03/2010)
++ BUG FIX: ChecksumSyslogMessageModifier was computing a "continuous"
+  checksum, meaning that the checksum was being generated based on
+  the current and all previous messages going through this message
+  modifier instead of being computed solely on the current message.
+  In case there are some users expecting or desiring this behavior,
+  ChecksumSyslogMessageModifierConfig now has a setContinuous(boolean)
+  method which is defaulted to a false value (the way it was intended
+  to work).  Those users must set this to a true value.
++ Added RFC3339TimestampUtility to robustly handle RFC3339-formatted
+  dates (Thanks, Chad!)
++ Improved date handling in StructuredSyslogServerEvent by using
+  RFC3339TimestampUtility
++ Switched default instances in SyslogMessageProcessor and
+  StructuredSyslogMessageProcessor from interfaces to classes
++ JUnit test improvements; 77.8% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.30 (07/25/2009)
++ Support added for "structured syslog" as defined here:
+  http://tools.ietf.org/html/draft-ietf-syslog-protocol-23
+  Code submitted by Manish Motwani (thanks, Manish!)
++ Renamed SyslogIF.fatal(..) methods to SyslogIF.emergency(..) to
+  be consistent with RFC 3164
++ Fixed copy/paste errors with SyslogIF.notice(..), SyslogIF.critical(..),
+  and SyslogIF.alert(..) levels
++ Fixed Log4jSyslogBackLogHandler.getLog4jLevel(..) to more
+  accurately convert syslog levels to Log4J levels
++ Set sendLocalName to false by default for UnixSocketSyslog
++ Improved UnixSyslog by using synchronization to support multiple
+  facilities by calling the static openlog(..) and closelog() methods as
+  necessary when the facility is "switched" between instances
+  (thanks, Ken!)
++ Added Syslog4jBackLogHandler which allows another Syslog4j protocol
+  to be used for back logging
++ JUnit test improvements; 77.5% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.29 (06/06/2009)
++ Added support for message truncation (instead of splitting messages
+  into more than one event) via SyslogConfigIF.setTruncateMessage(true)
++ Added more configuration options to Syslog4jAppenderSkeleton
++ Moved maxMessageLength to SyslogConfigIF
++ Set sendLocalName to false by default for UnixSyslog (credit: Nathan)
++ Removed unnecessary check for sub-zero length String in AbstractSyslog
+  (credit: Darien)
++ JUnit test improvements; 76.8% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.28 (06/03/2009)
++ Override added for UnixSyslog.prefixMessage(..) to remove support
+  for adding the "ident" value, which is redundant since Unix-based syslog
+  configures the ident within the openlog(..) method (thanks to Nathan)
++ Switched empty String in ident to a null before passing into openlog;
+  this substitutes the name of the running program for the ident field
+--------------------------------------------------------------------------
+Version 0.9.27 (04/16/2009)
++ Added main() methods to Syslog and SyslogServer for a rudimentary
+  command-line client/server implementations; coded in separate
+  SyslogMain and SyslogServerMain classes
++ Added notice(..), critical(..), and alert(..) methods to adhere
+  more completely with RFC 3164
++ SyslogServerEvent now parses incoming log data to determine level,
+  facility, date, and host
++ Several fixes to accommodate remote InetAddress information for
+  SyslogServerEvent
++ Added SyslogUtility.getLevel(String)
++ JUnit test improvements; 76.4% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.26 (03/29/2009)
++ Added SSLTCPNetSyslogServer and supporting classes for SSL/TLS
+  server support
++ Added keyStore, trustStore, keyStorePassword, and trustStorePassword
+  configuration options to SSL/TLS-related configuration classes
++ Refactored some configuration/method naming for consistency
++ JUnit test improvements; 76.0% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.25 (01/27/2009)
++ Removed delimiterSequence code from SyslogMessageProcessorIF,
+  SyslogMessageProcessor, AbstractSyslog, and all calling subclasses;
+  instead, a separate OutputStream.write(..) is called for the delimiter
++ Added a Socket.setSendBufferSize(..) call to TCPNetSyslogWriter;
+  this is combined with the delimiterSequence moved to a separate
+  OutputStream.write(..) call solves a problem where a single message
+  was lost every time a connection failure occurred between Syslog4j
+  and a syslog TCP server
++ Added more configuration properties to TCPNetSyslogConfig[IF] to
+  remove hard-coded values
++ JUnit test improvements; 75.1% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.24 (01/24/2009)
++ Fixes to AbstractSyslog and TCPNetSyslogWriter to properly handle
+  when TCP-based Syslog servers stop accepting connections and
+  then resume accepting connections
++ BacklogHandler down() and up() methods now working properly
++ Added maxAttempts to TCPNetSyslogConfig[IF] to remove hard-coded
+  "try twice" loop for trying twice to write a message to a TCP-based
+  Syslog server
++ Renamed all naming of "backlog" to "backLog" and "Backlog" to
+  "BackLog" for consistency's sake; except for the literal
+  TCP Socket concept of "backlog"
++ Fixed MultipleSyslog.getProtocol() to actually return protocol name
++ JUnit test improvements; 75.0% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.23 (01/23/2009)
++ Added Log4jSyslogBacklogHandler to use Log4j as a backup if a
+  Syslog protocol fails
++ Improvements to BacklogHandlers to flag "up" and "down" conditions.
++ TCPNetSyslog fixed getWriter(..) to not create new threads upon
+  a flush() or shutdown() call 
+--------------------------------------------------------------------------
+Version 0.9.22 (12/09/2008)
++ Refactored SyslogConfigIF and AbstractSyslogConfig to use more
+  interfaces (AbstractSyslogConfigIF, AbstractNetSyslogConfigIF,
+  TCPNetSyslogConfigIF) in order to reduce forced casts and forced
+  inheritance models
++ JUnit test improvements; 74.1% instruction code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.21 (11/26/2008)
++ Modified PooledTCPNetSyslogConfig to force maxIdle, minIdle, and
+  maxActive to the same value when isThreaded is true
++ TCPNetSyslog overridden for backlog(..) methods to strip delimiter
+  from message
++ Fixed SyslogServer.exists(String protocol) to be case insensitive
++ JUnit test improvements; now at 72.2% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.20
++ Added writeAttempts option to retry after a single Socket exception;
+  defaults to 2
++ Bugfixes relating to SyslogBacklogHandlers
++ JUnit test improvements; now at 72.1% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.19
++ Numerous bugfixes relating to the Writer, TCPNetSyslog, and
+  SSLTCPNetSyslog implementations
++ Performance/reliability improvements related to Thread handling
++ JUnit test improvements; maintained 71.3% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.18
++ Added SyslogBacklogHandlerIF, PrintStreamSyslogBacklogHandler,
+  SystemErrSyslogBacklogHandler, and SystemOutSyslogBacklogHandler
+  for handling logging when a failure occurs
++ Added support for Apache Commons Pooling for the TCP-based protocols,
+  with NetSyslogPoolFactory, PooledTCPNetSyslog, PooledTCPNetSyslogConfig,
+  and PooledSSLTCPNetSyslogConfig
++ Reworked the "Writer" implementation into AbstractNetWriter to support
+  pooling
++ Added Threaded JUnit tests for TCP, UDP, and pooling
++ Added MultipleSyslog and MultipleSyslogConfig to conveniently send
+  to more than one Syslog server simultaneously
++ JUnit test improvements; now at 71.3% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.17
++ Added support for secure syslog messages (via TCP over SSL) with
+  SSLTCPNetSyslogWriter and SSLTCPNetSyslogConfig classes
++ Refactored several classes to introduce the "ident" concept to all
+  syslog implementations in lieu of only the UnixSyslog syslog
+  implementation
++ Refactored PCISyslogMessage to remove appId (for good this time)
++ Created Syslog.initialize(), Syslog.shutdown(),
+  SyslogServer.initialize(), and SyslogServer.shutdown()
++ JUnit test improvements; now at 70.2% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.16
++ OSDetectUtility.isWindows() fixed
++ JUnit test improvements; now at 66.8% code coverage (EclEmma)
+--------------------------------------------------------------------------
+Version 0.9.15
++ Added appId to PCISyslogMessage
++ Moved StringCaseSyslogMessageModifier into the "text" subpackage
++ Added PrefixSyslogMessageModifier and SuffixSyslogMessageModifier
++ Added helper create methods to MacSyslogMessageModifier
+--------------------------------------------------------------------------
+Version 0.9.14
++ Added AbstractSyslogMessage for creating POJOs for logging
++ Added PCISyslogMessageIF and PCISyslogMessage to support PCI DSS
+  audit logging (see PCISyslogMessage Javadoc for details)
++ Moved the syslog packet processing code out of SyslogUtility into
+  SyslogMessageProcessor (implements SyslogMessageProcessorIF
+  interface) allowing it to be customized
++ Reorganized messagemodifier and some server classes into more
+  logical package structures
+--------------------------------------------------------------------------
+Version 0.9.13
++ Added Thread support to TcpNetSyslog implementation; added
+  TcpNetSyslogWriter to facilitate
++ Modified TcpNetSyslogServer and UdpNetSyslogServer to support
+  binding to a specific host
++ Modified TcpNetSyslogServer to support ServerSocket's "backlog"
+  parameter
++ Modified ChecksumSyslogMessageModifier and HashSyslogMessageModifier
+  classes to not statically create convenience instances (may have issues
+  on some non-Sun JCE implementations)
++ Documentation improvements
+--------------------------------------------------------------------------
+Version 0.9.12
++ Added DNS address caching mechanism to TCP and UDP implementations
+  (introduced AbstractNetSyslog for this)
++ Documentation additions to the FAQ
+--------------------------------------------------------------------------
+Version 0.9.11
++ Switched Base64Encoder/Base64Decoder with public domain Base64
+  class (http://iharder.sourceforge.net/current/java/base64/) for
+  speed improvement; added Base64CompareTest which was used to validate
+  the speed improvement
++ Added convenience methods in SyslogServer for creating Threads
++ Added thread getter/setter in SyslogServerIF and AbstractSyslogServer
+--------------------------------------------------------------------------
+Version 0.9.10
++ Added Log4j Appender support via Syslog4jAppenderSkeleton and
+  Syslog4jAppender (both are works in progress)
+--------------------------------------------------------------------------
+Version 0.9.9
++ Added SequentialSyslogMessageModifier
+--------------------------------------------------------------------------
+Version 0.9.8
++ Added SyslogServerEventIF interface
++ Modified ANT build process to include debug flags when compiling
+  classes for syslog4j-x.y.z.jar (source + binary)
++ Documentation additions
+--------------------------------------------------------------------------
+Version 0.9.7
++ Added StringCaseSyslogMessageModifier, HashSyslogMessageModifier,
+  MacSyslogMessageModifier, and improved ChecksumSyslogMessageModifier
++ Added test cases to SyslogMessageModifierTest
+--------------------------------------------------------------------------
+Version 0.9.6
++ Added SyslogMessageModifierIF to allow checksums, hashes, etc. to
+  be added to each message
++ Added ChecksumSyslogMessageModifier, LowerCaseSyslogMessageModifier,
+  and UpperCaseSyslogMessageModifier
++ Added SyslogMessageModifierTest JUnit test case
++ Created getBytes(config) method to SyslogUtility to remove need for
+  UnsupportedEncodingException catches in every class that uses it
+--------------------------------------------------------------------------
+Version 0.9.5
++ Added setSoLinger(true,1) for TCP client to solve lost packets problem
+  on Unix (and potentially other platforms)
++ Documentation improvements
+--------------------------------------------------------------------------
+Version 0.9.4
++ Removed forced dependency on JNA
+--------------------------------------------------------------------------
+Version 0.9.3
++ Preliminary support for Unix Domain Sockets (AF_UNIX) using JNI
+--------------------------------------------------------------------------
+Version 0.9.2
++ Cleanup, test cases, etc. 
+--------------------------------------------------------------------------
+Version 0.9.1
++ Initial working TCP/UDP build
+--------------------------------------------------------------------------
+Version 0.9.0
++ Project started
+--------------------------------------------------------------------------
+ 

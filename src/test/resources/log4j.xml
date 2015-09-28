@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+   <appender name="Console" class="org.apache.log4j.ConsoleAppender">
+      <param name="Target" value="System.out"/>
+      <param name="Threshold" value="DEBUG"/>
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      </layout>
+   </appender>
+
+   <appender name="Syslog4j" class="org.productivity.java.syslog4j.impl.log4j.Syslog4jAppender">
+   		<param name="Ident" value="Syslog4jLog4jTest"/>
+   		<param name="Protocol" value="log4jUdp"/>
+   		<param name="CharSet" value="ISO8859_1"/>
+		<param name="Facility" value="user"/>
+		<param name="Port" value="10514"/>
+   		<param name="LocalName" value="localhost"/>
+		<param name="SyslogHost" value="localhost"/>
+		<param name="ThreadLoopInterval" value="400"/>
+		<param name="SplitMessageBeginText" value=":::"/>
+		<param name="SplitMessageEndText" value=":::"/>
+		<param name="MaxMessageLength" value="1023"/>
+		<param name="MaxShutdownWait" value="25000"/>
+		<param name="TruncateMessage" value="on"/>
+		<param name="WriteRetries" value="5"/>
+		<param name="Threaded" value="false"/>
+		<param name="UseStructuredData" value="false"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m"/>
+		</layout>
+   </appender>
+   
+   <root>
+     <appender-ref ref="Console"/>
+     <appender-ref ref="Syslog4j"/>
+   </root>
+</log4j:configuration>

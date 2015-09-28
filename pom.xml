@@ -1,0 +1,41 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.syslog4j</groupId>
+  <artifactId>syslog4j</artifactId>
+  <version>0.9.46</version>
+  <packaging>jar</packaging>
+  <name>syslog4j</name>
+
+  <url>https://github.com/syslog4j</url>
+  <description>Syslog4j provides client and server implementations of the BSD Syslog protocol (RFC 3164) and the draft "structured syslog" protocol (RFC Draft). 
+  </description>
+  
+  <scm>
+    <connection>scm:git:git@github.com:syslog4j/${project.artifactId}.git</connection>
+    <developerConnection>${project.scm.connection}</developerConnection>
+    <url>https://github.com/syslog4j/${project.artifactId}</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>LGPL</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.5.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project> 
