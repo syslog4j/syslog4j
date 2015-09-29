@@ -9,7 +9,9 @@ Building Syslog4j
 -----------------
 
 Syslog4j uses a standard Maven build process.  You can build it using Maven
-3.2.0 or later, as follows:
+3.2.0 or later.
+
+*If you haven't done so already*, you'll need to build and install the [parent module] (https://github.com/syslog4j/syslog4j-parent).  Then, build syslog4j using:
 
 ```
 mvn clean install
