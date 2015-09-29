@@ -10,14 +10,7 @@ import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 public class PooledSSLTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	protected void setupPoolConfig(boolean threaded, int maxActive, int maxWait) {
 		PooledSSLTCPNetSyslogConfig config = new PooledSSLTCPNetSyslogConfig();
-		
-		// These next two lines aren't needed, but put here for code coverage
-		config.setKeyStore("certs/ssltest.jks");
-		config.setKeyStorePassword("ssltest");
 
-		config.setTrustStore("certs/ssltest.jks");
-		config.setTrustStorePassword("ssltest");
-		
 		config.setThreaded(threaded);
 		config.setThrowExceptionOnWrite(true);
 		config.setThrowExceptionOnInitialize(true);
@@ -41,15 +34,9 @@ public class PooledSSLTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 		return "pooledSslTcp";
 	}
 
-	protected String getServerProtocol() {
+	protected String getServerProtocol() throws Exception {
 		SSLTCPNetSyslogServerConfigIF config = new SSLTCPNetSyslogServerConfig();
-
-		config.setKeyStore("certs/ssltest.jks");
-		config.setKeyStorePassword("ssltest");
-
-		config.setTrustStore("certs/ssltest.jks");
-		config.setTrustStorePassword("ssltest");
-		
+		SSLConfigUtil.configure(config);
 		SyslogServer.createThreadedInstance("pooledSslTcp", config);
 		
 		return "pooledSslTcp";
