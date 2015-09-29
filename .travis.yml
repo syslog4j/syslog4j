@@ -1,6 +1,6 @@
 language: java
 install: git clone -b travis $(git config --get remote.origin.url) target/travis
-script: mvn deploy --settings target/travis/settings.xml
+script: mvn deploy --settings target/travis/settings.xml -P ossrh
 branches:
   except:
   - travis
