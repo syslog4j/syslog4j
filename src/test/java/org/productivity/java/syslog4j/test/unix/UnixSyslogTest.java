@@ -63,6 +63,11 @@ public class UnixSyslogTest extends TestCase {
 	}
 	
 	public void testUnixSyslog() {
+		if (Boolean.getBoolean(SyslogConstants.DISABLE_UNIX_PROPERTY)) {
+			assertTrue(true);
+			return;
+		}
+
 		SyslogIF syslog = Syslog.getInstance(SyslogConstants.UNIX_SYSLOG);
 		
 		syslog.getConfig().setFacility(SyslogIF.FACILITY_KERN);
