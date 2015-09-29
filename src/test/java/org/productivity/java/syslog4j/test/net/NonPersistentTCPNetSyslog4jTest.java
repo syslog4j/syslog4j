@@ -7,7 +7,7 @@ import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 public class NonPersistentTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	public static String instanceName = "tcp-non-persistent";
 	
-	public void setUp() {
+	public void setUp() throws Exception {
 		TCPNetSyslogConfig config = new TCPNetSyslogConfig();
 		config.setPersistentConnection(false);
 		

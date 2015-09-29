@@ -6,7 +6,7 @@ import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 public class UDPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	protected static boolean ONCE = true;
 	
-	public void setUp() {
+	public void setUp() throws Exception {
 		if (ONCE) {
 			ONCE = false;
 			

@@ -113,7 +113,7 @@ public abstract class AbstractNetSyslog4jTest extends AbstractBaseTest {
 	protected SyslogServerIF server = null;
 	
 	protected abstract String getClientProtocol();
-	protected abstract String getServerProtocol();
+	protected abstract String getServerProtocol() throws Exception;
 	
 	protected abstract int getMessageCount();
 
@@ -165,7 +165,7 @@ public abstract class AbstractNetSyslog4jTest extends AbstractBaseTest {
 		}
 	}
 
-	public void setUp() {
+	public void setUp() throws Exception {
 		String protocol = getServerProtocol();
 		
 		startServerThread(protocol);

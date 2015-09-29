@@ -53,7 +53,7 @@ public class TCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 		}
 	}
 	
-	public void setUp() {
+	public void setUp() throws Exception {
 		if (ONCE) {
 			ONCE = false;
 			
