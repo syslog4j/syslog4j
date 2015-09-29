@@ -1,0 +1,9 @@
+language: java
+script: mvn install
+# remove the line above and uncomment the following lines when Sonatype setup
+# is complete
+#before_install: git clone -b travis $(git config --get remote.origin.url) target/travis
+#script: mvn deploy --settings target/travis/settings.xml
+#branches:
+#  except:
+#  - travis
