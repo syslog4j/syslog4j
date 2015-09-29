@@ -1,5 +1,9 @@
 language: java
-script: mvn install
+install: git clone -b travis $(git config --get remote.origin.url) target/travis
+script: mvn deploy --settings target/travis/settings.xml
+branches:
+  except:
+  - travis
 env:
   global:
   - secure: scvCn+/I/9pPyZabx2939p3uDva0YmfZ5+jNJ9KMThy5ZLX24lFGd7Ohna+YLUlbfnFzNzmqf1k0c8zsJkBQV/Ke8pmEKmyL+ahBiYA6iWZoRUJZ9KWRgn+CPH4qJS30+M1J15FSHgPhs4wkOUFeYRSvzo291KJFEdMLUFEHV8qD+mzbTakLVeiHAsTDkwhw74SuslEBhLW/s8V5ZNnBiFvbPJkmpTcrhKkcAwqfPRRUDxTvrPR4kSQvbLewypihSAkdywVp5T9ZDjtfYwECo/xA1/qDenw5otNHiu11jml0nCjD3lS6+225W+7DNQa5Nlcb1Owv1yXQbO1xYSgznZ4Kkl/8Bhwde9FBYFK7IIFJ6ZJuaUNMdMSx78XUev6DM7tV0hsFjjeWgorMrLw315+wzo2r0Q0QTQO8dtsSAUjXoQRdrfCANkXjenOYtDU760tCh07Dn2X+kfQLjd4SjOt/SolmsHZpu7uducSuezF7jdUSFqwreYNfiIMIQcv5PsYpoJUxc1Lyl/0VekjbwMaQOfYz8Z8UYB5H18jZxyeefb1VElTjZ+lJ57+KTKLU7Bg9bSdra/dsndPAkhOEAXkzIhoXaCXiv71hgkomC8V8eZasOgZwlIuGW/qu8yah20HX0LyRmq74jKJjHJsEVTqMY4e2wZMgih49+4wzaXc=
