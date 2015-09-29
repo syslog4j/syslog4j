@@ -161,4 +161,7 @@ public interface SyslogConstants extends Serializable {
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_ON_BORROW_DEFAULT = false;
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_ON_RETURN_DEFAULT = false;
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_WHILE_IDLE_DEFAULT = false;
+
+	public static final String DISABLE_UNIX_PROPERTY = "syslog4j.disable.unix";
+
 }

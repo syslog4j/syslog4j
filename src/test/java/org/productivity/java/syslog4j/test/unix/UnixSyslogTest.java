@@ -10,6 +10,11 @@ import org.productivity.java.syslog4j.impl.unix.UnixSyslogConfig;
 
 public class UnixSyslogTest extends TestCase {
 	public void testUnixSyslogConfig() {
+		if (Boolean.getBoolean(SyslogConstants.DISABLE_UNIX_PROPERTY)) {
+			assertTrue(true);
+			return;
+		}
+
 		UnixSyslogConfig config = new UnixSyslogConfig();
 		
 		assertNull(config.getHost());

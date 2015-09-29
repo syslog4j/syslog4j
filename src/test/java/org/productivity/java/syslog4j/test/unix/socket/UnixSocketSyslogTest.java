@@ -10,6 +10,11 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 
 public class UnixSocketSyslogTest extends TestCase {
 	public void testUnixSyslog() {
+		if (Boolean.getBoolean(SyslogConstants.DISABLE_UNIX_PROPERTY)) {
+			assertTrue(true);
+			return;
+		}
+
 		SyslogIF syslog = Syslog.getInstance(SyslogConstants.UNIX_SOCKET);
 		
 		UnixSocketSyslogConfig config = (UnixSocketSyslogConfig) syslog.getConfig();

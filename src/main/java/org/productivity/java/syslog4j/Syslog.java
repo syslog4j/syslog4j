@@ -211,7 +211,7 @@ public final class Syslog implements SyslogConstants {
 		
 		if (OSDetectUtility.isUnix()
 			&& SyslogUtility.isClassExists(JNA_NATIVE_CLASS)
-			&& !Boolean.getBoolean("syslog4j.disable.unix")) {
+			&& !Boolean.getBoolean(DISABLE_UNIX_PROPERTY)) {
 			createInstance(UNIX_SYSLOG,new UnixSyslogConfig());
 			createInstance(UNIX_SOCKET,new UnixSocketSyslogConfig());
 		}
