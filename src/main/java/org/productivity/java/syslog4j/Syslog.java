@@ -315,4 +315,5 @@ public final class Syslog implements SyslogConstants {
 	public static void main(String[] args) throws Exception {
 		SyslogMain.main(args);
 	}
+
 }

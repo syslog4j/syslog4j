@@ -119,13 +119,22 @@ public class SyslogMain {
 	public static void main(String[] args) throws Exception {
 		main(args,true);
 	}
-	
+
 	public static void main(String[] args, boolean shutdown) throws Exception {
+		boolean ok = doMain(args, shutdown);
+		if (!ok && CALL_SYSTEM_EXIT_ON_FAILURE) {
+			System.exit(1);
+		}
+	}
+
+	public static boolean doMain(String[] args, boolean shutdown)
+			throws Exception {
+
 		Options options = parseOptions(args);
 
 		if (options.usage != null) {
 			usage(options.usage);
-			if (CALL_SYSTEM_EXIT_ON_FAILURE) { System.exit(1); } else { return; }
+			return false;
 		}
 		
 		if (!options.quiet) {
@@ -134,7 +143,7 @@ public class SyslogMain {
 		
 		if (!Syslog.exists(options.protocol)) {
 			usage("Protocol \"" + options.protocol + "\" not supported");
-			if (CALL_SYSTEM_EXIT_ON_FAILURE) { System.exit(1); } else { return; }
+			return false;
 		}
 		
 		SyslogIF syslog = Syslog.getInstance(options.protocol);
@@ -194,5 +203,7 @@ public class SyslogMain {
 		if (shutdown) {
 			Syslog.shutdown();
 		}
+
+		return true;
 	}
 }

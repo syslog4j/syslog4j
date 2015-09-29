@@ -50,7 +50,7 @@ public class CommandLineNetSyslog4jTest extends TestCase {
 	}
 	
 	public void testTCP() {
-		testSendReceive("tcp",true);
+		testSendReceive("tcp",false);
 	}
 	
 	public void testSendReceive(String protocol, boolean useSyslogClass) {
