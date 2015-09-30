@@ -95,7 +95,9 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 			
 			try {
 				InetAddress hostAddress = this.tcpNetSyslog.getHostAddress();
-				
+				System.out.format("creating TCP connection to %s:%d\n",
+						hostAddress, syslog.getConfig().getPort());
+
 				this.socket = createSocket(hostAddress,this.syslog.getConfig().getPort(),this.tcpNetSyslogConfig.isPersistentConnection());
 				lastSocketCreationTimeMs = System.currentTimeMillis();				
 				
