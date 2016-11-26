@@ -1,12 +1,10 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.syslog4j</groupId>
-    <artifactId>syslog4j-parent</artifactId>
-    <version>1-SNAPSHOT</version>
-  </parent>
+
+  <groupId>org.syslog4j</groupId>
   <artifactId>syslog4j</artifactId>
   <version>0.9.46-SNAPSHOT</version>
+
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
 
@@ -38,30 +36,37 @@
   </build>
 
   <dependencies>
+
     <dependency>
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
-      <optional>true</optional>
+      <version>1.6</version>
     </dependency>
+
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <optional>true</optional>
+      <version>1.2.17</version>
     </dependency>
+
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <optional>true</optional>
+      <version>2.9.6</version>
     </dependency>
+
     <dependency>
       <groupId>com.sun.jna</groupId>
       <artifactId>jna</artifactId>
-      <optional>true</optional>
+      <version>3.0.9</version>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project> 
