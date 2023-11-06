@@ -83,7 +83,7 @@ public class UnixSyslog extends AbstractSyslog {
 				
 				if (ident != null) {
 					identBuffer = new Memory(128);
-					identBuffer.setString(0, ident, false);
+					identBuffer.setString(0, ident, "ISO-8859-1");
 				}
 				
 				libraryInstance.openlog(identBuffer,config.getOption(),currentFacility);

@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.productivity.java.syslog4j.impl.net.tcp.TCPNetSyslogConfig;
 import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslogConfig;
-import org.productivity.java.syslog4j.impl.unix.UnixSyslogConfig;
-import org.productivity.java.syslog4j.impl.unix.socket.UnixSocketSyslogConfig;
-import org.productivity.java.syslog4j.util.OSDetectUtility;
+//import org.productivity.java.syslog4j.impl.unix.UnixSyslogConfig;
+//import org.productivity.java.syslog4j.impl.unix.socket.UnixSocketSyslogConfig;
+//import org.productivity.java.syslog4j.util.OSDetectUtility;
 import org.productivity.java.syslog4j.util.SyslogUtility;
 
 /**
@@ -209,14 +209,16 @@ public final class Syslog implements SyslogConstants {
 		createInstance(UDP,new UDPNetSyslogConfig());
 		createInstance(TCP,new TCPNetSyslogConfig());
 		
-		if (OSDetectUtility.isUnix()
-			&& SyslogUtility.isClassExists(JNA_NATIVE_CLASS)
-			&& !Boolean.getBoolean(DISABLE_UNIX_PROPERTY)) {
-			createInstance(UNIX_SYSLOG,new UnixSyslogConfig());
-			createInstance(UNIX_SOCKET,new UnixSocketSyslogConfig());
-		}
+//		if (OSDetectUtility.isUnix() && SyslogUtility.isClassExists(JNA_NATIVE_CLASS)) {
+//			createInstance(UNIX_SYSLOG,new UnixSyslogConfig());
+//			createInstance(UNIX_SOCKET,new UnixSocketSyslogConfig());
+//		}
 	}
 	
+	public static boolean isShutdown () {
+		return instances.isEmpty();
+	}
+
 	/**
 	 * @param protocol - Syslog protocol
 	 * @return Returns whether the protocol has been previously defined.
@@ -317,5 +319,4 @@ public final class Syslog implements SyslogConstants {
 	public static void main(String[] args) throws Exception {
 		SyslogMain.main(args);
 	}
-
 }

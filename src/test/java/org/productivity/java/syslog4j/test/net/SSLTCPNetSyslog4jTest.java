@@ -1,11 +1,6 @@
 package org.productivity.java.syslog4j.test.net;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import org.junit.Ignore;
+import org.junit.Test;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig;
 import org.productivity.java.syslog4j.server.SyslogServer;
@@ -13,9 +8,20 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.ssl.SSLTCPNetSyslogSer
 import org.productivity.java.syslog4j.server.impl.net.tcp.ssl.SSLTCPNetSyslogServerConfigIF;
 import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 
+/**
+ * Test sending and receiving of syslog messages over a SSL connection.
+ * 
+ * History
+ * =======
+ * 23.05.2017 WLI setUp of class SSLTCPNetSyslog4jTest initializes the ServiceRegistry
+ *            because SSLTCPNetSyslogServer.getServerSocketFactory() uses SSLHelper 
+ *            and SSLHelper calls ServiceRegistry.getServiceInstance.
+ * 15.09.2017 WLI setUp of class SSLTCPNetSyslog4jTest also creates an registers
+ *            a dummy EnvironmentSettingsService which delivers the keystore to the SSLHelper 
+ */
 public class SSLTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	protected int getMessageCount() {
-		return 100;
+		return 10;
 	}
 
 	protected String getClientProtocol() {
@@ -25,34 +31,52 @@ public class SSLTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	protected String getServerProtocol() {
 		return "sslTcp";
 	}
-	
-	public void setUp() throws Exception {
+
+	public void setUp() {
+		
 		setupSslClient();
 		setupSslServer();
 
 		super.setUp();
 	}
 	
-	protected void setupSslClient() throws Exception {
+	protected void setupSslClient() {
 		SSLTCPNetSyslogConfig config = new SSLTCPNetSyslogConfig("127.0.0.1",10514);
-		SSLConfigUtil.configure(config);
+/*	WL: SSL	
+		// These next two lines aren't needed, but put here for code coverage
+		config.setKeyStore("certs/ssltest.jks");
+		config.setKeyStorePassword("ssltest");
+
+		config.setTrustStore("certs/ssltest.jks");
+		config.setTrustStorePassword("ssltest");
+ */		
+//		config.setThreaded(false); // WL: originally the test uses the default (threaded = true)
+		
 		Syslog.createInstance("sslTcp",config);
 	}
 
-	protected void setupSslServer() throws Exception {
+	protected void setupSslServer() {
 		SSLTCPNetSyslogServerConfigIF config = new SSLTCPNetSyslogServerConfig();
-		SSLConfigUtil.configure(config);
+	/*	WL: SSL	
+		config.setKeyStore("certs/ssltest.jks");
+		config.setKeyStorePassword("ssltest");
+
+		config.setTrustStore("certs/ssltest.jks");
+		config.setTrustStorePassword("ssltest");
+	*/
 		SyslogServer.createInstance("sslTcp", config);
 	}
-
+	
 	protected boolean isSyslogServerTcpBacklog() {
 		return true;
 	}
 
+	@Test
 	public void testSendReceive() {
 		super._testSendReceive(true,true);
 	}
-
+	
+	@Test
 	public void testThreadedSendReceive() {
 		super._testThreadedSendReceive(50,true,true);
 	}

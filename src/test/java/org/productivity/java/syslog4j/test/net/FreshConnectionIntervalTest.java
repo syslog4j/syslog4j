@@ -75,10 +75,10 @@ public class FreshConnectionIntervalTest extends TestCase {
 		
 		SyslogUtility.sleep(100);
 		
-		SyslogServer.destroyInstance(server);
 		Syslog.destroyInstance(syslog);
-
 		SyslogUtility.sleep(100);
+		SyslogServer.destroyInstance(server);
+
 
 		assertEquals("OpenCounter",3,counter.openCounter);
 		assertEquals("EventCounter",10,counter.eventCounter);

@@ -14,7 +14,7 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConf
 */
 public class SSLTCPNetSyslogServerConfig extends TCPNetSyslogServerConfig implements SSLTCPNetSyslogServerConfigIF {
 	private static final long serialVersionUID = -840102682868286462L;
-
+/*
 	protected String keyStore = null;
 	protected String keyStorePassword = null;
 
@@ -52,7 +52,7 @@ public class SSLTCPNetSyslogServerConfig extends TCPNetSyslogServerConfig implem
 	public void setTrustStorePassword(String trustStorePassword) {
 		this.trustStorePassword = trustStorePassword;
 	}
-
+*/
 	public Class getSyslogServerClass() {
 		return SSLTCPNetSyslogServer.class;
 	}

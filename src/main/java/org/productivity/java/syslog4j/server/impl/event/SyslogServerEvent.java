@@ -20,6 +20,10 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 * 
 * @author &lt;syslog4j@productivity.org&gt;
 * @version $Id: SyslogServerEvent.java,v 1.9 2011/01/11 06:21:15 cvs Exp $
+*
+* History
+* =======
+* 07.07.2020 WLI ORC-3849 Syslog server was not able to parse date TIMESTAMP without fractional seconds.
 */
 public class SyslogServerEvent implements SyslogServerEventIF {
 	private static final long serialVersionUID = 6136043067089899962L;
@@ -132,7 +136,9 @@ public class SyslogServerEvent implements SyslogServerEventIF {
 			}
 		}
 		
-		parseHost();
+//	ORC-3849 DO NOT parseHost twice: It is yet called in parsePriority
+//	see unit test SyslogParameterTest.testSyslogEventWithBSDTimestamp()
+//		parseHost();
 	}
 	
 	protected void parsePriority() {
@@ -165,7 +171,8 @@ public class SyslogServerEvent implements SyslogServerEventIF {
 		if (this.message == null) {
 			this.message = SyslogUtility.newString(this,this.rawBytes,this.rawLength);
 		}
-		
+		// WL: RFC 5424 defines the following message structure:
+		// <PRIVAL> VERSION TIMESTAMP HOSTNAME APP-NAME PROCID MSGID [SD-ID KEY="VAL"...] MSG
 		parsePriority();
 	}
 	

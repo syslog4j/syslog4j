@@ -45,6 +45,9 @@ public class TCPNetSyslogConfig extends AbstractNetSyslogConfig implements TCPNe
 	
 	protected int freshConnectionInterval = TCP_FRESH_CONNECTION_INTERVAL_DEFAULT;
 	
+	protected boolean writeRFC5425Packet = TCP_WRITERFC5425PACKET_DEFAULT; // WL
+	
+
 	public TCPNetSyslogConfig() {
 		initialize();
 	}
@@ -140,6 +143,14 @@ public class TCPNetSyslogConfig extends AbstractNetSyslogConfig implements TCPNe
 
 	public void setSetBufferSize(boolean setBufferSize) {
 		this.setBufferSize = setBufferSize;
+	}
+	
+	public boolean isWriteRFC5425Packet() { // WL
+		return writeRFC5425Packet;
+	}
+
+	public void setWriteRFC5425Packet(boolean rfc5425Packet) { // WL
+		this.writeRFC5425Packet = rfc5425Packet;
 	}
 
 	public int getFreshConnectionInterval() {

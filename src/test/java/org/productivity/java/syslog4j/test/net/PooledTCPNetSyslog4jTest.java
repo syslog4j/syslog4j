@@ -5,8 +5,29 @@ import org.productivity.java.syslog4j.impl.net.tcp.pool.PooledTCPNetSyslogConfig
 import org.productivity.java.syslog4j.server.SyslogServer;
 import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConfig;
 import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
+import org.productivity.java.syslog4j.util.SyslogUtility;
 
 public class PooledTCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
+	
+	
+	public void setUp() {
+		
+//	WLI: PooledTCPNetSyslog4jTest run into an error
+		Syslog.shutdown();
+		Syslog.initialize();
+		
+		super.setUp();
+	}
+
+	/**
+	 * Shutdown and wait for 250 milliseconds.
+	 * This is necessary since linux needs some time for sockets to be freed. 
+	 */
+	public void tearDown() {
+		super.tearDown();
+		SyslogUtility.sleep(250);
+	}
+
 	protected void setupPoolConfig(boolean threaded, int maxActive, int maxWait) {
 		PooledTCPNetSyslogConfig config = new PooledTCPNetSyslogConfig();
 		

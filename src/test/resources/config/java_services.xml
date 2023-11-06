@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<java_services>
+
+    <service name  = "javax.xml.soap.MessageFactory" 
+             class = "com.sun.xml.internal.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" 
+			 protocol = "SOAP 1.1 Protocol" />
+
+    <service name  = "javax.xml.soap.MessageFactory" 
+             class = "com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl" 
+			 protocol = "SOAP 1.2 Protocol" />
+
+    <service name  = "javax.xml.soap.MessageFactory" 
+             class = "com.sun.xml.internal.messaging.saaj.soap.dynamic.SOAPMessageFactoryDynamicImpl" 
+			 protocol = "Dynamic Protocol" />
+
+    <service name  = "javax.xml.validation.SchemaFactory"  
+             class = "com.sun.org.apache.xerces.internal.jaxp.validation.XMLSchemaFactory" />
+
+    <service name  = "javax.xml.datatype.DatatypeFactory"  
+             class = "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl" />
+
+    <service name  = "javax.xml.parsers.SAXParserFactory"  
+             class = "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" />
+
+    <service name  = "javax.xml.parsers.DocumentBuilderFactory"  
+             class = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
+
+<!--
+	<service name  = "javax.xml.stream.XMLOutputFactory"
+			 class = "com.bea.xml.stream.XMLOutputFactoryBase" /> 
+  -->
+
+	<service name  = "javax.xml.stream.XMLOutputFactory"
+			 class = "com.sun.xml.internal.stream.XMLOutputFactoryImpl" /> 
+	
+	<service name  = "javax.xml.stream.XMLInputFactory"		 
+			 class = "com.sun.xml.internal.stream.XMLInputFactoryImpl" /> 
+
+	<service name  = "javax.xml.transform.TransformerFactory"		 
+			 class = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl" /> 
+			 
+</java_services>

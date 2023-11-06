@@ -26,6 +26,14 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 * 
 * @author &lt;syslog4j@productivity.org&gt;
 * @version $Id: TCPNetSyslogWriter.java,v 1.20 2010/11/28 01:38:08 cvs Exp $
+* 
+* History
+* =======
+* 03.05.2017 WLI In the previous version of this class i set method write to synchronized.
+*                This was wrong because then the unit test SyslogServerSessionTest.testTCPSession failed.
+*                Actually i don't know why but i found that it stuck in the invocation of write 
+*                because obviously there was a lock on the object.
+*                Now i removed synchronized from method write.
 */
 public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 	private static final long serialVersionUID = -6388813866108482855L;
@@ -50,11 +58,11 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 		this.tcpNetSyslogConfig = (TCPNetSyslogConfigIF) this.tcpNetSyslog.getConfig();
 	}
 	
-	protected SocketFactory obtainSocketFactory() {
+	protected SocketFactory obtainSocketFactory() throws Exception {
 		return SocketFactory.getDefault();
 	}
 	
-	protected Socket createSocket(InetAddress hostAddress, int port, boolean keepalive) throws IOException {
+	protected Socket createSocket(InetAddress hostAddress, int port, boolean keepalive) throws Exception {
 		SocketFactory socketFactory = obtainSocketFactory();
 		
 		Socket newSocket = socketFactory.createSocket(hostAddress,port);
@@ -95,15 +103,16 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 			
 			try {
 				InetAddress hostAddress = this.tcpNetSyslog.getHostAddress();
-				System.out.format("creating TCP connection to %s:%d\n",
-						hostAddress, syslog.getConfig().getPort());
-
+				
 				this.socket = createSocket(hostAddress,this.syslog.getConfig().getPort(),this.tcpNetSyslogConfig.isPersistentConnection());
 				lastSocketCreationTimeMs = System.currentTimeMillis();				
 				
 			} catch (IOException ioe) {
 				throw new SyslogRuntimeException(ioe);
+			}catch (Exception e) {
+				throw new SyslogRuntimeException(e);
 			}
+			
 		}
 		
 		return this.socket;
@@ -130,8 +139,27 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 	}
 	
 	public void write(byte[] message) throws SyslogRuntimeException {
-		Socket currentSocket = null;
+    	
+		int msglen = message.length;
+		if (msglen == 0)
+			return;
 		
+    	byte[] delimiterSequence = this.tcpNetSyslogConfig.getDelimiterSequence();
+		if (delimiterSequence != null) { // WL
+			msglen += delimiterSequence.length;
+		}
+		
+		int bufsize = msglen;
+		byte[] packetLengthPrefix = null;
+		if (this.tcpNetSyslogConfig.isWriteRFC5425Packet()) { // WL
+			// The message length is the octet count of the SYSLOG-MSG in the SYSLOG-FRAME.  
+			// A transport receiver MUST use the message length to delimit a syslog message.
+			packetLengthPrefix = getPacketLengthPrefix(msglen);
+			bufsize = msglen + packetLengthPrefix.length;
+		}
+		
+		Socket currentSocket = null;
+
 		int attempts = 0;
 		while(attempts != -1 && attempts < (this.tcpNetSyslogConfig.getWriteRetries() + 1)) {
 	        try {
@@ -142,14 +170,17 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 	    		}
 	            
 	        	OutputStream os = currentSocket.getOutputStream();
-	        	
+        		
 	        	if (this.tcpNetSyslogConfig.isSetBufferSize()) {
-	        		currentSocket.setSendBufferSize(message.length);
+	        		currentSocket.setSendBufferSize(bufsize);
+	        	}
+	        	
+	        	if (this.tcpNetSyslogConfig.isWriteRFC5425Packet()) { // WL
+	        		os.write(packetLengthPrefix);
 	        	}
 	        	
 	        	os.write(message);
 	        	
-	        	byte[] delimiterSequence = this.tcpNetSyslogConfig.getDelimiterSequence();
 	        	if (delimiterSequence != null && delimiterSequence.length > 0) {
 	        		os.write(delimiterSequence);
 	        	}
@@ -163,6 +194,7 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 	        	}
 	            
 	        } catch (IOException ioe) {
+	        	ioe.printStackTrace(); // WL
 	        	attempts++;
 	        	closeSocket(currentSocket);
 	        	
@@ -171,6 +203,25 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 	        	}
 	        }
 		}
+	}
+
+	public static byte[] getPacketLengthPrefix(int msglen) {
+		int buflen = 1;
+		for (int v = msglen; v != 0; v = v / 10) {
+			buflen++;
+		}
+		
+		byte[] buffer = new byte[buflen];
+		int idx = buffer.length - 1;
+		buffer[idx--] = ' ';
+		while (idx >= 0) {
+			int r = msglen % 10;
+			int digit = '0' + r;
+			buffer[idx--] = (byte)digit;
+			msglen = msglen / 10;
+		}
+
+		return buffer;
 	}
 
 	public synchronized void flush() throws SyslogRuntimeException {
@@ -217,7 +268,7 @@ public class TCPNetSyslogWriter extends AbstractSyslogWriter {
 			if (this.socket == null || this.socket.isClosed()) {
 				return;
 			}
-			
+
 			closeSocket(this.socket);
 		}
 	}

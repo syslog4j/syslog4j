@@ -21,7 +21,9 @@ import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConf
 import org.productivity.java.syslog4j.util.SyslogUtility;
 
 public class SyslogServerSessionTest extends TestCase {
+	
 	public static class TCPSessionHandler implements SyslogServerSessionEventHandlerIF {
+		
 		private static final long serialVersionUID = -5516122648345973259L;
 		
 		public static int currentSession = 0;
@@ -113,6 +115,7 @@ public class SyslogServerSessionTest extends TestCase {
 	}
 
 	public class UDPSessionHandler implements SyslogServerSessionEventHandlerIF {
+		
 		private static final long serialVersionUID = 6854997677465025089L;
 		
 		public int currentSession = 0;

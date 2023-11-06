@@ -66,7 +66,7 @@ public abstract class AbstractSyslogMessageProcessor implements SyslogMessagePro
 		return data;
 	}
 
-	protected void appendPriority(StringBuffer buffer, int facility, int level) {
+	protected void appendPriority(StringBuilder buffer, int facility, int level) {
 		int priority = facility | level;
 
 		buffer.append("<");
@@ -74,7 +74,7 @@ public abstract class AbstractSyslogMessageProcessor implements SyslogMessagePro
 		buffer.append(">");
 	}
 	
-	protected void appendLocalTimestamp(StringBuffer buffer) {
+	protected void appendLocalTimestamp(StringBuilder buffer) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(SYSLOG_DATEFORMAT,Locale.ENGLISH);
 		
 		String datePrefix = dateFormat.format(new Date());
@@ -89,7 +89,7 @@ public abstract class AbstractSyslogMessageProcessor implements SyslogMessagePro
 		}		
 	}
 	
-	protected void appendLocalName(StringBuffer buffer, String localName) {
+	protected void appendLocalName(StringBuilder buffer, String localName) {
 		if (localName != null) {
 			buffer.append(localName);
 			
@@ -101,7 +101,7 @@ public abstract class AbstractSyslogMessageProcessor implements SyslogMessagePro
 	}
 
 	public String createSyslogHeader(int facility, int level, String localName, boolean sendLocalTimestamp, boolean sendLocalName) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		
 		appendPriority(buffer,facility,level);
 		

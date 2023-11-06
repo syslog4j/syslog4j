@@ -23,7 +23,7 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 	private static final long serialVersionUID = -3728308557871358111L;
 	
-	protected final static List defaultBackLogHandlers = new ArrayList();
+	protected final static List<SyslogBackLogHandlerIF> defaultBackLogHandlers = new ArrayList<SyslogBackLogHandlerIF>();
 	
 	static {
 		defaultBackLogHandlers.add(new SystemErrSyslogBackLogHandler());
@@ -48,8 +48,8 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 	protected byte[] splitMessageBeginText = SPLIT_MESSAGE_BEGIN_TEXT_DEFAULT.getBytes();
 	protected byte[] splitMessageEndText = SPLIT_MESSAGE_END_TEXT_DEFAULT.getBytes();
 	
-	protected List messageModifiers = null;
-	protected List backLogHandlers = null;
+	protected List<SyslogMessageModifierIF> messageModifiers = null;
+	protected List<SyslogBackLogHandlerIF> backLogHandlers = null;
 
 	protected boolean threaded = THREADED_DEFAULT;
 	protected boolean useDaemonThread = USE_DAEMON_THREAD_DEFAULT;
@@ -62,7 +62,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 	protected boolean truncateMessage = TRUNCATE_MESSAGE_DEFAULT;
 	protected boolean useStructuredData = USE_STRUCTURED_DATA_DEFAULT;
 
-	public abstract Class getSyslogClass();
+	public abstract Class<?> getSyslogClass();
 	
 	public String getCharSet() {
 		return this.charSet;
@@ -164,9 +164,9 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 		this.ident = ident;
 	}
 
-	protected synchronized List _getMessageModifiers() {
+	protected synchronized List<SyslogMessageModifierIF> _getMessageModifiers() {
 		if (this.messageModifiers == null) {
-			this.messageModifiers = new ArrayList();
+			this.messageModifiers = new ArrayList<SyslogMessageModifierIF>();
 		}
 		
 		return this.messageModifiers;
@@ -177,7 +177,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _messageModifiers = _getMessageModifiers();
+		List<SyslogMessageModifierIF> _messageModifiers = _getMessageModifiers();
 		
 		synchronized(_messageModifiers) {
 			_messageModifiers.add(messageModifier);
@@ -189,7 +189,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _messageModifiers = _getMessageModifiers();
+		List<SyslogMessageModifierIF> _messageModifiers = _getMessageModifiers();
 		
 		synchronized(_messageModifiers) {
 			try {
@@ -206,18 +206,18 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _messageModifiers = _getMessageModifiers();
+		List<?> _messageModifiers = _getMessageModifiers();
 		
 		synchronized(_messageModifiers) {
 			_messageModifiers.remove(messageModifier);
 		}
 	}
 
-	public List getMessageModifiers() {
+	public List<SyslogMessageModifierIF> getMessageModifiers() {
 		return this.messageModifiers;
 	}
 
-	public void setMessageModifiers(List messageModifiers) {
+	public void setMessageModifiers(List<SyslogMessageModifierIF> messageModifiers) {
 		this.messageModifiers = messageModifiers;
 	}	
 	
@@ -229,9 +229,9 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 		this.messageModifiers.clear();
 	}
 
-	protected synchronized List _getBackLogHandlers() {
+	protected synchronized List<SyslogBackLogHandlerIF> _getBackLogHandlers() {
 		if (this.backLogHandlers == null) {
-			this.backLogHandlers = new ArrayList();
+			this.backLogHandlers = new ArrayList<SyslogBackLogHandlerIF>();
 		}
 		
 		return this.backLogHandlers;
@@ -242,7 +242,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _backLogHandlers = _getBackLogHandlers();
+		List<SyslogBackLogHandlerIF> _backLogHandlers = _getBackLogHandlers();
 		
 		synchronized(_backLogHandlers) {
 			backLogHandler.initialize();
@@ -255,7 +255,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _backLogHandlers = _getBackLogHandlers();
+		List<SyslogBackLogHandlerIF> _backLogHandlers = _getBackLogHandlers();
 		
 		synchronized(_backLogHandlers) {
 			try {
@@ -273,14 +273,14 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 			return;
 		}
 		
-		List _backLogHandlers = _getBackLogHandlers();
+		List<?> _backLogHandlers = _getBackLogHandlers();
 		
 		synchronized(_backLogHandlers) {
 			_backLogHandlers.remove(backLogHandler);
 		}
 	}
 
-	public List getBackLogHandlers() {
+	public List<SyslogBackLogHandlerIF> getBackLogHandlers() {
 		if (this.backLogHandlers == null || this.backLogHandlers.size() < 1) {
 			return defaultBackLogHandlers;
 		}
@@ -288,7 +288,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 		return this.backLogHandlers;
 	}
 
-	public void setBackLogHandlers(List backLogHandlers) {
+	public void setBackLogHandlers(List<SyslogBackLogHandlerIF> backLogHandlers) {
 		this.backLogHandlers = backLogHandlers;
 	}	
 	
@@ -372,7 +372,7 @@ public abstract class AbstractSyslogConfig implements AbstractSyslogConfigIF {
 		this.useStructuredData = useStructuredData;
 	}
 
-	public Class getSyslogWriterClass() {
+	public Class<?> getSyslogWriterClass() {
 		return null;
 	}
 }

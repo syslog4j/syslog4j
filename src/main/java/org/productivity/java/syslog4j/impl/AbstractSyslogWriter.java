@@ -27,7 +27,7 @@ public abstract class AbstractSyslogWriter implements Runnable, Serializable {
 	
 	protected AbstractSyslog syslog = null;
 
-	protected List queuedMessages = null;
+	protected List<byte[]> queuedMessages = null;
 	
 	protected Thread thread = null;
 
@@ -46,7 +46,7 @@ public abstract class AbstractSyslogWriter implements Runnable, Serializable {
 		}
 		
 		if (this.syslogConfig.isThreaded()) {
-			this.queuedMessages = new LinkedList();
+			this.queuedMessages = new LinkedList<byte[]>();
 		}
 	}
 	
@@ -79,10 +79,10 @@ public abstract class AbstractSyslogWriter implements Runnable, Serializable {
 
 	public void run() {
 		while(!this.shutdown || !this.queuedMessages.isEmpty()) {
-			List queuedMessagesCopy = null;
+			List<byte[]> queuedMessagesCopy = null;
 			
 			synchronized(this.queuedMessages) {
-				queuedMessagesCopy = new LinkedList(this.queuedMessages);
+				queuedMessagesCopy = new LinkedList<byte[]>(this.queuedMessages);
 				this.queuedMessages.clear();
 			}
 			

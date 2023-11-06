@@ -13,8 +13,8 @@ public class StructuredSyslogMessageProcessorTest extends TestCase {
 		newMessageProcessor.setApplicationName("app1");
 		assertEquals("app1",newMessageProcessor.getApplicationName());
 		
-		newMessageProcessor.setProcessId("proc1");
-		assertEquals("proc1",newMessageProcessor.getProcessId());
+//		newMessageProcessor.setProcessId("proc1");
+//		assertEquals("proc1",newMessageProcessor.getProcessId());
 		
 		StructuredSyslogMessageProcessor.setDefault(newMessageProcessor);
 		assertEquals(newMessageProcessor,StructuredSyslogMessageProcessor.getDefault());

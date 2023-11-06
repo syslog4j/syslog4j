@@ -20,6 +20,7 @@ public class SSLTCPNetSyslog extends TCPNetSyslog {
 	public void initialize() throws SyslogRuntimeException {
 		super.initialize();
 		
+	  /* WL: SSL
 		SSLTCPNetSyslogConfigIF sslTcpNetSyslogConfig = (SSLTCPNetSyslogConfigIF) this.tcpNetSyslogConfig;
 		
 		String keyStore = sslTcpNetSyslogConfig.getKeyStore();
@@ -45,5 +46,6 @@ public class SSLTCPNetSyslog extends TCPNetSyslog {
 		if (trustStorePassword != null && !"".equals(trustStorePassword.trim())) {
 			System.setProperty("javax.net.ssl.trustStorePassword",trustStorePassword);
 		}
+	*/
 	}
 }

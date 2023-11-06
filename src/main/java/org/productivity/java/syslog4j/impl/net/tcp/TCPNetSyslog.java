@@ -79,7 +79,6 @@ public class TCPNetSyslog extends AbstractNetSyslog {
 
 	public void shutdown() throws SyslogRuntimeException {
 		AbstractSyslogWriter syslogWriter = getWriter(false);
-	
 		if (syslogWriter != null) {
 			syslogWriter.shutdown();
 		}

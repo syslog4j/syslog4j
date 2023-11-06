@@ -1,7 +1,8 @@
 package org.productivity.java.syslog4j.impl.message.processor.structured;
 
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.productivity.java.syslog4j.impl.message.processor.AbstractSyslogMessageProcessor;
 import org.productivity.java.syslog4j.impl.message.structured.StructuredSyslogMessage;
 
@@ -27,6 +28,10 @@ import org.productivity.java.syslog4j.impl.message.structured.StructuredSyslogMe
  * 
  * @author Manish Motwani
  * @version $Id: StructuredSyslogMessageProcessor.java,v 1.4 2011/01/11 05:11:13 cvs Exp $
+ * 
+ * History
+ * =======
+ * 07.07.2020 WLI ORC-3849 Replaced joda time by java time API.
  */
 public class StructuredSyslogMessageProcessor extends AbstractSyslogMessageProcessor {
 	private static final long serialVersionUID = -1563777226913475257L;
@@ -37,9 +42,10 @@ public class StructuredSyslogMessageProcessor extends AbstractSyslogMessageProce
 	protected static StructuredSyslogMessageProcessor defaultInstance = INSTANCE;
 	
 	private String applicationName = STRUCTURED_DATA_APP_NAME_DEFAULT_VALUE;
-	private String processId = STRUCTURED_DATA_PROCESS_ID_DEFAULT_VALUE;
+//	private String processId = STRUCTURED_DATA_PROCESS_ID_DEFAULT_VALUE; // WL: moved processId to StructuredSyslogMessage
 	
-	private DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
+	// ORC-3849 using java time instead of joda time
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 	public static void setDefault(StructuredSyslogMessageProcessor messageProcessor) {
 		if (messageProcessor != null) {
@@ -76,30 +82,38 @@ public class StructuredSyslogMessageProcessor extends AbstractSyslogMessageProce
 		this.applicationName = applicationName;
 	}
 
-	public String getProcessId() {
-		return this.processId;
-	}
+// WL: moved processId to StructuredSyslogMessage
+//	public String getProcessId() {
+//		return this.processId;
+//	}
+//
+//	public void setProcessId(String processId) {
+//		this.processId = processId;
+//	}
 
-	public void setProcessId(String processId) {
-		this.processId = processId;
-	}
-
+	/**
+	 * WL: RFC 5424 defines the following message structure:
+     *     <PRIVAL> VERSION TIMESTAMP HOSTNAME APP-NAME PROCID MSGID [SD-ID KEY="VAL"...] MSG
+     *
+	 */
 	public String createSyslogHeader(final int facility, final int level, String localName, final boolean sendLocalTimestamp, final boolean sendLocalName) {
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 
 		appendPriority(buffer,facility,level);
 		buffer.append(VERSION);
 		buffer.append(' ');
-
-		getDateTimeFormatter().printTo(buffer,System.currentTimeMillis());
+		
+		// ORC-3849 using java time instead of joda time
+		getDateTimeFormatter().formatTo(OffsetDateTime.now(), buffer);
+		
 		buffer.append(' ');
 
 		appendLocalName(buffer,localName);
 
-		buffer.append(StructuredSyslogMessage.nilProtect(this.applicationName))
-				.append(' ');
+		buffer.append(StructuredSyslogMessage.nilProtect(this.applicationName)).append(' ');
 
-		buffer.append(StructuredSyslogMessage.nilProtect(this.processId)).append(' ');
+// WL: moved the processId to the StructuredSyslogMessage
+//		buffer.append(StructuredSyslogMessage.nilProtect(this.processId)).append(' ');
 		
 		return buffer.toString();
 	}

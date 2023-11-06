@@ -16,11 +16,11 @@ import org.productivity.java.syslog4j.SyslogConfigIF;
 * @version $Id: AbstractSyslogConfigIF.java,v 1.7 2010/10/29 03:14:20 cvs Exp $
 */
 public interface AbstractSyslogConfigIF extends SyslogConfigIF {
-	public Class getSyslogWriterClass();
+	public Class<?> getSyslogWriterClass();
 	
-	public List getBackLogHandlers();
+	public List<?> getBackLogHandlers();
 	
-	public List getMessageModifiers();
+	public List<?> getMessageModifiers();
 
 	public byte[] getSplitMessageBeginText();
 	public void setSplitMessageBeginText(byte[] beginText);

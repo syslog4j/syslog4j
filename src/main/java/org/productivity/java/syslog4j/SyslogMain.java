@@ -119,22 +119,13 @@ public class SyslogMain {
 	public static void main(String[] args) throws Exception {
 		main(args,true);
 	}
-
+	
 	public static void main(String[] args, boolean shutdown) throws Exception {
-		boolean ok = doMain(args, shutdown);
-		if (!ok && CALL_SYSTEM_EXIT_ON_FAILURE) {
-			System.exit(1);
-		}
-	}
-
-	public static boolean doMain(String[] args, boolean shutdown)
-			throws Exception {
-
 		Options options = parseOptions(args);
 
 		if (options.usage != null) {
 			usage(options.usage);
-			return false;
+			if (CALL_SYSTEM_EXIT_ON_FAILURE) { System.exit(1); } else { return; }
 		}
 		
 		if (!options.quiet) {
@@ -143,7 +134,7 @@ public class SyslogMain {
 		
 		if (!Syslog.exists(options.protocol)) {
 			usage("Protocol \"" + options.protocol + "\" not supported");
-			return false;
+			if (CALL_SYSTEM_EXIT_ON_FAILURE) { System.exit(1); } else { return; }
 		}
 		
 		SyslogIF syslog = Syslog.getInstance(options.protocol);
@@ -185,25 +176,23 @@ public class SyslogMain {
 				is = System.in;
 			}
 			
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			
-			String line = br.readLine();
-			
-			while(line != null && line.length() > 0) {
-				if (!options.quiet) {
-					System.out.println("Sending " + options.facility + "." + options.level + " message \"" + line + "\"");
-				}
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+				String line = br.readLine();
 				
-				syslog.log(level,line);
-			
-				line = br.readLine();
-			}
+				while(line != null && line.length() > 0) {
+					if (!options.quiet) {
+						System.out.println("Sending " + options.facility + "." + options.level + " message \"" + line + "\"");
+					}
+					
+					syslog.log(level,line);
+				
+					line = br.readLine();
+				}
+			} // auto-closes br
 		}
 
 		if (shutdown) {
 			Syslog.shutdown();
 		}
-
-		return true;
 	}
 }

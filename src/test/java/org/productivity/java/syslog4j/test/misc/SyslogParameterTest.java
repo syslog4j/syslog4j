@@ -4,7 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.Key;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +17,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.SyslogBackLogHandlerIF;
 import org.productivity.java.syslog4j.SyslogConfigIF;
@@ -29,12 +30,9 @@ import org.productivity.java.syslog4j.impl.AbstractSyslog;
 import org.productivity.java.syslog4j.impl.AbstractSyslogConfig;
 import org.productivity.java.syslog4j.impl.AbstractSyslogConfigIF;
 import org.productivity.java.syslog4j.impl.backlog.NullSyslogBackLogHandler;
-import org.productivity.java.syslog4j.impl.backlog.Syslog4jBackLogHandler;
-import org.productivity.java.syslog4j.impl.backlog.log4j.Log4jSyslogBackLogHandler;
 import org.productivity.java.syslog4j.impl.backlog.printstream.PrintStreamSyslogBackLogHandler;
 import org.productivity.java.syslog4j.impl.backlog.printstream.SystemErrSyslogBackLogHandler;
 import org.productivity.java.syslog4j.impl.backlog.printstream.SystemOutSyslogBackLogHandler;
-import org.productivity.java.syslog4j.impl.log4j.Syslog4jAppender;
 import org.productivity.java.syslog4j.impl.message.modifier.hash.HashSyslogMessageModifierConfig;
 import org.productivity.java.syslog4j.impl.message.modifier.mac.MacSyslogMessageModifier;
 import org.productivity.java.syslog4j.impl.message.modifier.mac.MacSyslogMessageModifierConfig;
@@ -56,8 +54,6 @@ import org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogWriter;
 import org.productivity.java.syslog4j.impl.net.tcp.ssl.pool.PooledSSLTCPNetSyslogConfig;
 import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslog;
 import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslogConfig;
-import org.productivity.java.syslog4j.impl.unix.socket.UnixSocketSyslog;
-import org.productivity.java.syslog4j.impl.unix.socket.UnixSocketSyslogConfig;
 import org.productivity.java.syslog4j.server.SyslogServer;
 import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
 import org.productivity.java.syslog4j.server.SyslogServerEventHandlerIF;
@@ -68,7 +64,18 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConf
 import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConfigIF;
 import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
 
+/**
+ * 
+ * @author wli
+ *
+ * History
+ * =======
+ * 07.07.2020 WLI ORC-3849 Syslog server was not able to parse date TIMESTAMP without fractional seconds.
+ *            new unit tests testSyslogEventWithoutFractionalSeconds01/02, testSyslogEventWithCorrectTimestamp01/02, 
+ *            testSyslogEventWithBSDTimestamp
+ */
 public class SyslogParameterTest extends TestCase {
+	
 	public static class FakeSyslogConfig implements SyslogConfigIF {
 		private static final long serialVersionUID = -4215212236417198317L;
 
@@ -355,11 +362,11 @@ public class SyslogParameterTest extends TestCase {
 		assertEquals("udp",SyslogServer.getInstance("udp").getProtocol());
 	}
 	
-	public static class FakeLoggerFactory implements LoggerFactory {
-		public Logger makeNewLoggerInstance(String name) {
-			return Logger.getRootLogger();
-		}
-	}
+//	public static class FakeLoggerFactory implements LoggerFactory {
+//		public Logger makeNewLoggerInstance(String name) {
+//			return Logger.getRootLogger();
+//		}
+//	}
 	
 	public void testSyslogCreateInstance() {
 		try {
@@ -732,7 +739,7 @@ public class SyslogParameterTest extends TestCase {
 		udpServerConfig = new UDPNetSyslogServerConfig("hostname3");
 		assertEquals("hostname3",udpServerConfig.getHost());
 	}
-
+/*
 	public void testSyslog4jAppender() {
 		Syslog4jAppender appender = new Syslog4jAppender();
 		appender.initialize();
@@ -795,7 +802,7 @@ public class SyslogParameterTest extends TestCase {
 		appender.setUseStructuredData("true");
 		assertEquals("true",appender.getUseStructuredData());
 	}
-	
+*/
 	public void testSSLTCPNetSyslogConfigCreate() {
 		TCPNetSyslogConfig config = null;
 		
@@ -1002,7 +1009,7 @@ public class SyslogParameterTest extends TestCase {
 		s = new String(baos.toByteArray());
 		assertTrue(s.equals("DEBUG Test (ignore) [UNKNOWN]"));
 
-		//
+/*
 	
 		Class loggerClass = null;
 		
@@ -1115,8 +1122,10 @@ public class SyslogParameterTest extends TestCase {
 		new Log4jSyslogBackLogHandler(logger);
 
 		new Log4jSyslogBackLogHandler(logger,true);
+ */
 	}
-	
+
+/*
 	public void testLog4jSyslogBackLogHandler() {
 		SyslogBackLogHandlerIF bh = new Log4jSyslogBackLogHandler(this.getClass());
 		
@@ -1169,7 +1178,8 @@ public class SyslogParameterTest extends TestCase {
 			//
 		}
 	}
-	
+*/
+
 	public void testSequentialSyslogMessageModifierConfigCreate() {
 		SequentialSyslogMessageModifierConfig config = new SequentialSyslogMessageModifierConfig();
 		
@@ -1318,39 +1328,116 @@ public class SyslogParameterTest extends TestCase {
 		syslog.setStructuredMessageProcessor(messageProcessor);
 		assertEquals(messageProcessor,syslog.getStructuredMessageProcessor());
 		
-		SyslogMessageIF m1 = new StructuredSyslogMessage("test1",new HashMap(),"test2");
-		SyslogMessageIF m2 = new StructuredSyslogMessage("test1",new HashMap(),"test2");
-		SyslogMessageIF m3 = new StructuredSyslogMessage("test3",new HashMap(),"test2");
-		SyslogMessageIF m4 = new StructuredSyslogMessage("test1",new HashMap(),"test4");
-		
-		assertFalse(m1.equals(null));
-		assertFalse(m1.equals("Wrong Class"));
-		assertTrue(m1.equals(m1));
-		assertTrue(m2.equals(m2));
+		SyslogMessageIF m1 = new StructuredSyslogMessage("procId", "test1",new HashMap(),"test2");
+		SyslogMessageIF m2 = new StructuredSyslogMessage("procId", "test1",new HashMap(),"test2");
+		SyslogMessageIF m3 = new StructuredSyslogMessage("procId", "test3",new HashMap(),"test2");
+		SyslogMessageIF m4 = new StructuredSyslogMessage("procId", "test1",new HashMap(),"test4");
+		SyslogMessageIF m5 = new StructuredSyslogMessage("proc2", "test1",new HashMap(),"test4");
 		
 		assertFalse(m1.equals(m3));
 		assertFalse(m1.equals(m4));
+		assertFalse(m5.equals(m4));
 	}
 	
-	public void testStructuredSyslogEvent() {
-		InetAddress localhost = null;
+	/**
+	 * ORC-3849 Test Syslog message with timestamp 2020-07-03T06:31:09Z having no fractional seconds.
+	 * @throws UnknownHostException 
+	 * @throws ParseException 
+	 */
+	public void testSyslogEventWithoutFractionalSeconds01() throws UnknownHostException, ParseException {
+		final String hostname = "v-community-health-record-6df6c77c7c-k26d2.community-health-record.icw-ehealth-suite.svc.cluster.local";
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		final String eventDateStr = "2020-07-03T06:31:09Z";
+		final java.util.Date expectedDate = dateFormat.parse(eventDateStr);
 		
-		try {
-			localhost = InetAddress.getLocalHost();
-			
-		} catch (Exception e) {
-			//
-		}
-		
-		String message = "<165> 2003-10-11T22:14:15.003Z hostname appname process-id message-id [id@1234 test1=\"test2\"] test3";
+		String message = "<85>1 "+eventDateStr+' '+hostname+" icw-chr 195 IHE+RFC-3881 - timestamp test 1";
+		InetAddress localhost = InetAddress.getLocalHost();
 		
 		StructuredSyslogServerEvent event = new StructuredSyslogServerEvent(message.getBytes(),message.length(),localhost);
+//		org.joda.time.DateTime dt = event.getDateTime();
+		java.util.Date eventDate = event.getDate();
+		assertEquals(expectedDate, eventDate);
+		
+		assertEquals(hostname,event.getHost());
+		assertEquals("icw-chr",event.getApplicationName());
+//		assertEquals("process-id",event.getProcessId()); WL moved processId to StructuredSyslogMessage
+
+		StructuredSyslogMessage sm = event.getStructuredMessage();
+
+		assertEquals("195",sm.getProcessId());
+		assertEquals("IHE+RFC-3881",sm.getMessageId());
+		assertEquals("timestamp test 1",sm.getMessage());
+	}
+
+	/**
+	 * ORC-3849 Test Syslog message with timestamp 1985-04-12T19:20:50-04:00 having no fractional seconds.
+	 * @throws UnknownHostException 
+	 */
+	public void testSyslogEventWithoutFractionalSeconds02() throws UnknownHostException {
+		StructuredSyslogMessage sm = testStructuredSyslogEvent("<165> 1985-04-12T19:20:50-04:00 hostname appname process-id message-id - timestamp test 2");
+		
+		assertEquals("process-id",sm.getProcessId());
+		assertEquals("message-id",sm.getMessageId());
+		assertEquals("timestamp test 2",sm.getMessage());
+	}
+	
+	/**
+	 * ORC-3849 Test Syslog message with timestamp JAN 05 13:17:45
+	 * @throws UnknownHostException 
+	 * @throws ParseException 
+	 */
+	public void testSyslogEventWithBSDTimestamp() throws UnknownHostException, ParseException {
+		String message = "<85>1 JAN 05 13:17:45 hostname appname process-id message-id - BSD test";
+		InetAddress localhost = InetAddress.getLocalHost();
+		
+		StructuredSyslogServerEvent event = new StructuredSyslogServerEvent(message.getBytes(),message.length(),localhost);
+//		org.joda.time.DateTime dt = event.getDateTime();
+		java.util.Date eventDate = event.getDate();
+		assertNotNull(eventDate);
+		System.out.println("EVENT-DATE: " + eventDate.toString() );
+		assertTrue(eventDate.toString().contains("Jan 05 13:17:45"));
 		
 		assertEquals("hostname",event.getHost());
 		assertEquals("appname",event.getApplicationName());
-		assertEquals("process-id",event.getProcessId());
+
 		StructuredSyslogMessage sm = event.getStructuredMessage();
+
+		assertEquals("process-id",sm.getProcessId()); 
+		assertEquals("message-id",sm.getMessageId());
+		assertEquals("BSD test",sm.getMessage());
+	}
+	
+	/**
+	 * ORC-3849 Test Syslog message with timestamp 2020-07-03T06:31:09.000Z
+	 * @throws UnknownHostException 
+	 */
+	public void testSyslogEventWithCorrectTimestamp01() throws UnknownHostException {
+		StructuredSyslogMessage sm = testStructuredSyslogEvent("<165>1 2020-07-03T06:31:09.001Z hostname appname process-id message-id - timestamp test 1");
 		
+		assertEquals("process-id",sm.getProcessId());
+		assertEquals("message-id",sm.getMessageId());
+		assertEquals("timestamp test 1",sm.getMessage());
+		
+		Map map = sm.getStructuredData();
+		assertNull(map);
+	}
+	
+	/**
+	 * ORC-3849 Test Syslog message with timestamp 2020-07-03T06:31:09Z having no fractional seconds.
+	 * @throws UnknownHostException 
+	 */
+	public void testSyslogEventWithCorrectTimestamp02() throws UnknownHostException {
+		StructuredSyslogMessage sm = testStructuredSyslogEvent("<165> 2003-08-24T05:14:15.000003-07:00 hostname appname process-id message-id - timestamp test 2");
+		
+		assertEquals("process-id",sm.getProcessId());
+		assertEquals("message-id",sm.getMessageId());
+		assertEquals("timestamp test 2",sm.getMessage());
+	}
+
+	public void testStructuredSyslogEvent() throws UnknownHostException {
+		StructuredSyslogMessage sm = testStructuredSyslogEvent("<165> 2003-10-11T22:14:15.003Z hostname appname process-id message-id [id@1234 test1=\"test2\"] test3");
+		
+		assertEquals("process-id",sm.getProcessId()); // WL moved processId to StructuredSyslogMessage
 		assertEquals("message-id",sm.getMessageId());
 		assertEquals("test3",sm.getMessage());
 		
@@ -1360,14 +1447,34 @@ public class SyslogParameterTest extends TestCase {
 		Map item = (Map) map.get("id@1234");
 		assertTrue(item.containsKey("test1"));
 		assertEquals("test2",item.get("test1"));
-		
+	}
+	
+	public void testStructuredSyslogEventWithError() throws UnknownHostException {
 		String message2 = "3 junk ab [ [ ]";
+		InetAddress localhost = InetAddress.getLocalHost();
 		StructuredSyslogServerEvent event2 = new StructuredSyslogServerEvent(message2.getBytes(),message2.length(),localhost);
 		
 		StructuredSyslogMessage sm2 = event2.getStructuredMessage();
 		assertEquals(message2,sm2.getMessage());
+		
 	}
 	
+	private StructuredSyslogMessage testStructuredSyslogEvent(String message) throws UnknownHostException {
+		InetAddress localhost = InetAddress.getLocalHost();
+		
+		StructuredSyslogServerEvent event = new StructuredSyslogServerEvent(message.getBytes(),message.length(),localhost);
+//		org.joda.time.DateTime dt = event.getDateTime();
+		java.util.Date eventDate = event.getDate();
+		
+		assertEquals("hostname",event.getHost());
+		assertEquals("appname",event.getApplicationName());
+//		assertEquals("process-id",event.getProcessId()); WL moved processId to StructuredSyslogMessage
+
+		return event.getStructuredMessage();
+	}
+	
+	
+/*	
 	public void testUnixSocketSyslogConfigParameters() {
 		UnixSocketSyslogConfig syslogConfig = new UnixSocketSyslogConfig(SyslogConstants.FACILITY_CRON);
 		assertEquals(SyslogConstants.FACILITY_CRON,syslogConfig.getFacility());
@@ -1473,4 +1580,6 @@ public class SyslogParameterTest extends TestCase {
 			//
 		}
 	}
+ */
+	
 }

@@ -1,10 +1,9 @@
 package org.productivity.java.syslog4j.server.impl.event.structured;
 
 import java.net.InetAddress;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.productivity.java.syslog4j.SyslogConstants;
 import org.productivity.java.syslog4j.impl.message.structured.StructuredSyslogMessage;
 import org.productivity.java.syslog4j.server.impl.event.SyslogServerEvent;
@@ -26,13 +25,18 @@ import org.productivity.java.syslog4j.server.impl.event.SyslogServerEvent;
  * 
  * @author Manish Motwani
  * @version $Id: StructuredSyslogServerEvent.java,v 1.6 2011/01/11 05:11:13 cvs Exp $
+ * 
+ * History
+ * =======
+ * 07.07.2020 WLI ORC-3849 Syslog server was not able to parse date TIMESTAMP without fractional seconds.
+ *            Replaced joda time by java time API.
  */
 public class StructuredSyslogServerEvent extends SyslogServerEvent {
 	private static final long serialVersionUID = 1676499796406044315L;
 
 	protected String applicationName = SyslogConstants.STRUCTURED_DATA_APP_NAME_DEFAULT_VALUE;
-	protected String processId = null;
-	protected DateTime dateTime = null;
+//	protected String processId = null; WL moved processId from StructuredSyslogServerEvent to StructuredSyslogMessage
+	protected OffsetDateTime dateTime = null; // ORC-3849 using java time instead of joda time
 	protected DateTimeFormatter dateTimeFormatter = null;
 	
 	public StructuredSyslogServerEvent(final byte[] message, int length, InetAddress inetAddress) {
@@ -51,7 +55,8 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 
 	public DateTimeFormatter getDateTimeFormatter() {
 		if (dateTimeFormatter == null) {
-			this.dateTimeFormatter = ISODateTimeFormat.dateTime();
+			// ORC-3849 using java time instead of joda time
+			this.dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 		}
 		
 		return dateTimeFormatter;
@@ -67,7 +72,7 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 		if (i > -1) {
 			this.applicationName = this.message.substring(0, i).trim();
 			this.message = this.message.substring(i + 1);
-			parseProcessId();
+//			parseProcessId(); WL moved processId to StructuredSyslogMessage
 		}
 
 		if (SyslogConstants.STRUCTURED_DATA_NILVALUE.equals(this.applicationName)) {
@@ -75,19 +80,20 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 		}
 	}
 
-	protected void parseProcessId() {
-		int i = this.message.indexOf(' ');
-
-		if (i > -1) {
-			this.processId = this.message.substring(0, i).trim();
-			this.message = this.message.substring(i + 1);
-		}
-
-		if (SyslogConstants.STRUCTURED_DATA_NILVALUE.equals(this.processId)) {
-			this.processId = null;
-		}
-	}
-
+// WL moved processId to StructuredSyslogMessage
+//	protected void parseProcessId() {
+//		int i = this.message.indexOf(' ');
+//
+//		if (i > -1) {
+//			this.processId = this.message.substring(0, i).trim();
+//			this.message = this.message.substring(i + 1);
+//		}
+//
+//		if (SyslogConstants.STRUCTURED_DATA_NILVALUE.equals(this.processId)) {
+//			this.processId = null;
+//		}
+//	}
+	
 	protected void parseDate() {
 		// skip VERSION field
 		int i = this.message.indexOf(' ');
@@ -102,8 +108,11 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 			try {
 				DateTimeFormatter formatter = getDateTimeFormatter();
 				
-				this.dateTime = formatter.parseDateTime(dateString);
-				this.date = this.dateTime.toDate();
+				 // ORC-3849 using java time instead of joda time
+				this.dateTime = OffsetDateTime.parse(dateString, formatter);
+				
+				final long epochMillis = dateTime.toInstant().toEpochMilli();
+				this.date = new java.util.Date(epochMillis);
 				
 				this.message = this.message.substring(dateString.length() + 1);
 				
@@ -129,11 +138,12 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 		return this.applicationName;
 	}
 
-	public String getProcessId() {
-		return this.processId;
-	}
-	
-	public DateTime getDateTime() {
+// WL moved processId to StructuredSyslogMessage
+//	public String getProcessId() {
+//		return this.processId;
+//	}
+
+	public OffsetDateTime getDateTime() {
 		return this.dateTime;
 	}
 
@@ -145,7 +155,7 @@ public class StructuredSyslogServerEvent extends SyslogServerEvent {
 			// throw new SyslogRuntimeException(
 			// "Message received is not a valid structured message: "
 			// + getMessage(), e);
-			return new StructuredSyslogMessage(null,null,getMessage());
+			return new StructuredSyslogMessage(null,null,null,getMessage());
 		}
 	}
 }

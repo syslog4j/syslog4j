@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<configuration>
+ 
+	<service name="MasterdataService" class="emds.epi.impl.baseservice.OrchestraBaseService">
+	
+		<parameters>
+			<group name = "SSLSettings">
+			  	<parameter	name = "PROTOCOL" 					value = "TLS" /> 
+		  		<parameter	name = "KEYSTORE" 					value = "config/security/orchestra.keystore" /> 
+		  		<parameter	name = "KEYSTORE.PASSWORD" 			value = "000841454d455854414a00066d65646f626b000000105ef6774724235d102526ef03e131532f" /> 
+		  		<parameter	name = "KEYSTORE.KEYPASSWORD" 		value = "000841454d455854414a00066d65646f626b000000105ef6774724235d102526ef03e131532f" />
+		  		<parameter 	name = "TRUSTSTORE"					value = "config/security/orchestra.truststore" />
+				<parameter 	name = "TRUSTSTORE.PASSWORD"		value = "000841454d455854414a00066d65646f626b000000105ef6774724235d102526ef03e131532f" />
+				<parameter 	name = "TRUSTSTORE.TYPE"			value = "JKS"/> 
+		  	</group>
+		</parameters>
+		<parameter_reference reference="config/environment_settings.xml" />	  
+
+	</service>
+	
+	<service name  = "EnvironmentSettingsService"  
+             class = "emds.epi.impl.baseservice.EnvironmentSettingsServiceDesigner" >	
+    </service>
+    	 
+    <!-- RuntimeContext configuration -->
+    
+    <service name  = "RuntimeContext"  
+             class = "emds.epi.impl.context.RuntimeContextServiceImpl" >
+
+	   <variable name = "MESSAGECLEANUP"		class="emds.epi.impl.messagestore.MessageResourceManager" 	/>
+
+    </service>
+       
+</configuration>

@@ -28,8 +28,8 @@ public class ServerEventTest extends TestCase {
 		assertEquals("test",event.getMessage());
 		assertTrue(event.isHostStrippedFromMessage());
 
-		InetAddress mirrorInetAddress = InetAddress.getByName("mirror.productivity.org");
-		String mirrorHostName = "mirror";
+		InetAddress mirrorInetAddress = InetAddress.getByName("xtgoie03.xtgroup.local");
+		String mirrorHostName = "xtgoie03";
 		
 		message = (baseMessage + mirrorHostName + " test").getBytes();
 		event = new SyslogServerEvent(message,message.length,mirrorInetAddress);

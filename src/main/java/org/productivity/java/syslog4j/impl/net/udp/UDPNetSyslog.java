@@ -35,6 +35,7 @@ public class UDPNetSyslog extends AbstractNetSyslog {
 	protected synchronized void createDatagramSocket(boolean initialize) {
 		try {
 			this.socket = new DatagramSocket();
+			this.socket.setSendBufferSize(syslogConfig.getMaxMessageLength());
 			
 		} catch (SocketException se) {
 			if (initialize) {
