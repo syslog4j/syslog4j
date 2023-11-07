@@ -209,7 +209,7 @@ public final class SyslogUtility implements SyslogConstants {
 	
 	private static Syslog4jSSLContextBuilder sslContextBuilder;
 	
-	public static void setClientSSLContextBuilder(Syslog4jSSLContextBuilder contextBuilder) {
+	public static void setSSLContextBuilder(Syslog4jSSLContextBuilder contextBuilder) {
 		sslContextBuilder = contextBuilder;
 	}
 	
