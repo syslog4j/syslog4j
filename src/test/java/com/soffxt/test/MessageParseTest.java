@@ -24,9 +24,9 @@ public class MessageParseTest {
 	@Test
 	public void testStructuredMessageParsing1 () throws UnsupportedEncodingException {
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", makeStructData(), "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", makeStructData(), "Ã„rger");
 		
-		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] " + StructuredSyslogMessage.BOM + "Ärger";
+		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] " + StructuredSyslogMessage.BOM + "Ã„rger";
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
 		assertEquals(msg1,msg2);
 	}
@@ -34,9 +34,9 @@ public class MessageParseTest {
 	@Test
 	public void testStructuredMessageParsing2 () throws UnsupportedEncodingException {
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", makeStructData(), "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", makeStructData(), "Ã„rger");
 		
-		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] Ärger";
+		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] Ã„rger";
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
 		assertEquals(msg1,msg2);
 	}
@@ -46,7 +46,7 @@ public class MessageParseTest {
 		
 		Map<String,Map<String,String>> structData = null;
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ã„rger");
 		String syslogMessageStr = msg1.createMessage();
 
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
@@ -58,7 +58,7 @@ public class MessageParseTest {
 		
 		Map<String,Map<String,String>> structData = new HashMap<String,Map<String,String>> ();
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ã„rger");
 		String syslogMessageStr = msg1.createMessage();
 
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
@@ -70,7 +70,7 @@ public class MessageParseTest {
 		
 		Map<String,Map<String,String>> structData = makeStructData();
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", structData, "Ã„rger");
 		String syslogMessageStr = msg1.createMessage();
 
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
@@ -80,9 +80,9 @@ public class MessageParseTest {
 	@Test
 	public void testStructuredMessageParsing6 () throws UnsupportedEncodingException {
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", null, "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage ("prcId", "mgId", null, "Ã„rger");
 		
-		String syslogMessageStr = "prcId mgId - " + StructuredSyslogMessage.BOM + "Ärger";
+		String syslogMessageStr = "prcId mgId - " + StructuredSyslogMessage.BOM + "Ã„rger";
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
 		assertEquals(msg1,msg2);
 	}
@@ -90,22 +90,22 @@ public class MessageParseTest {
 	@Test
 	public void testStructuredMessageParsing7 () throws UnsupportedEncodingException {
 		
-		StructuredSyslogMessage msg1 = new StructuredSyslogMessage (null, null, null, "Ärger");
+		StructuredSyslogMessage msg1 = new StructuredSyslogMessage (null, null, null, "Ã„rger");
 		
-		String syslogMessageStr = "- - - " + StructuredSyslogMessage.BOM + "Ärger";
+		String syslogMessageStr = "- - - " + StructuredSyslogMessage.BOM + "Ã„rger";
 		StructuredSyslogMessage msg2 = StructuredSyslogMessage.fromString(syslogMessageStr);
 		assertEquals(msg1,msg2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testStructuredMessageParsing10 () throws UnsupportedEncodingException {
-		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"]Ärger";
+		String syslogMessageStr = "prcId mgId [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"]Ã„rger";
 		StructuredSyslogMessage.fromString(syslogMessageStr);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testStructuredMessageParsing11 () throws UnsupportedEncodingException {
-		String syslogMessageStr = "test [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] Ärger";
+		String syslogMessageStr = "test [origin software=\"Orchestra\" swVersion=\"4.5.8.0\"] Ã„rger";
 		StructuredSyslogMessage.fromString(syslogMessageStr);
 	}
 }
