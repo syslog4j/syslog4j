@@ -37,4 +37,7 @@ public interface TCPNetSyslogConfigIF extends AbstractNetSyslogConfigIF {
 
 	public int getFreshConnectionInterval();
 	public void setFreshConnectionInterval(int interval);
+	
+	public boolean isWriteRFC5425Packet(); // WL
+	public void setWriteRFC5425Packet(boolean writRFC5425Packet); // WL
 }

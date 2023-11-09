@@ -1,0 +1,26 @@
+############################################################
+# Configure scenario specific logging
+############################################################
+
+emds.log.scenario.level					= INFO
+emds.log.scenario.enabled				= true
+emds.log.scenario.loggername			= emds.log.scenario.%s
+
+# If you want to specify a scenario specific log-level use the following line
+# replace the scenario-id with the actual scenario identifier
+
+# emds.log.scenario.<scenario-id>.level = INFO
+
+# Use the following lines to configure the log output
+# For the attribute pattern the standard properties of java-util-logging can be used
+# Futhermore the following parameters are supported by orchestra
+#   $(SCENARIO.ID)	 - Unique identifier of scenario
+#   $(SCENARIO_NAME) - Name of scenario
+#   %d				 - current date in format yyyyMMdd e.g. 20110718
+
+emds.log.scenario.FileHandler.pattern 	= C:/temp/orchestra/log/%d_$(SCENARIO.NAME)_orchestra_%g.mlog
+emds.log.scenario.FileHandler.limit 	= 250000
+emds.log.scenario.FileHandler.count 	= 4
+# emds.log.scenario.FileHandler.formatter = emds.log.context.LineFormatter
+emds.log.scenario.FileHandler.formatter = emds.log.context.StandardFormatter
+emds.log.scenario.FileHandler.parent	= false

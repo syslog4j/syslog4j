@@ -23,7 +23,7 @@ public interface SyslogConstants extends Serializable {
 	public static final String SYSLOG_DATEFORMAT = "MMM dd HH:mm:ss ";
 	
 	public static final String STRUCTURED_DATA_NILVALUE = "-";
-	public static final String STRUCTURED_DATA_EMPTY_VALUE = "[0@0]";
+	public static final String STRUCTURED_DATA_EMPTY_VALUE = "[0@0]"; // WL: according to RFC 5424 we should write - if no structured data is present 
 
 	public static final String CHAR_SET_DEFAULT = "UTF-8";
 
@@ -74,6 +74,8 @@ public interface SyslogConstants extends Serializable {
 	public static final int TCP_MAX_ACTIVE_SOCKETS_DEFAULT = 0;
 	public static final byte TCP_MAX_ACTIVE_SOCKETS_BEHAVIOR_DEFAULT = 0;
 
+	public static final boolean TCP_WRITERFC5425PACKET_DEFAULT = false;
+	
 	public static final int FACILITY_KERN     =  0;
 	public static final int FACILITY_USER     =  1<<3;
 	public static final int FACILITY_MAIL     =  2<<3;
@@ -161,7 +163,4 @@ public interface SyslogConstants extends Serializable {
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_ON_BORROW_DEFAULT = false;
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_ON_RETURN_DEFAULT = false;
 	public static final boolean SYSLOG_POOL_CONFIG_TEST_WHILE_IDLE_DEFAULT = false;
-
-	public static final String DISABLE_UNIX_PROPERTY = "syslog4j.disable.unix";
-
 }

@@ -16,6 +16,17 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConf
 import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 import org.productivity.java.syslog4j.util.SyslogUtility;
 
+/**
+ * 
+ * @author wli
+ *
+ * History
+ * =======
+ * 03.05.2017 WLI LC-001 Other UnitTests call Syslog.shutdown().
+ *                Because shutdown is a static method this Unit test failed if other tests where invoked!
+ *                Actually this is a bad pattern in the Syslog4j library.
+ *                To cope with this i call Syslog.shutdown(); and Syslog.initialize(); in setUp
+ */
 public class TCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 	protected static boolean ONCE = true;
 	
@@ -53,7 +64,13 @@ public class TCPNetSyslog4jTest extends AbstractNetSyslog4jTest {
 		}
 	}
 	
-	public void setUp() throws Exception {
+	public void setUp() {
+		
+//		LC-001: Because the order of execution is not defined
+//			    this test run into an error if other tests called Syslog.shutdown(); 
+		Syslog.shutdown();
+		Syslog.initialize();
+
 		if (ONCE) {
 			ONCE = false;
 			

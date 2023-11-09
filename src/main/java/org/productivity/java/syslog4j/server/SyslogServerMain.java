@@ -140,7 +140,8 @@ public class SyslogServerMain {
 		}
 
 		if (options.fileName != null) {
-			SyslogServerEventHandlerIF eventHandler = new FileSyslogServerEventHandler(options.fileName,options.append);
+			long maxFileSize = 10 * 1024 * 1024;
+			SyslogServerEventHandlerIF eventHandler = new FileSyslogServerEventHandler(options.fileName,options.append, maxFileSize, 2);
 			syslogServerConfig.addEventHandler(eventHandler);
 			if (!options.quiet) {
 				System.out.println((options.append ? "Appending" : "Writing") + " to file: " + options.fileName);
@@ -158,8 +159,10 @@ public class SyslogServerMain {
 
 		SyslogServer.getThreadedInstance(options.protocol);
 		
-		while(true) {
-			SyslogUtility.sleep(1000);
-		}
+		System.out.print("enter newline:");
+		System.in.read();
+		
+		syslogServer.shutdown();
+		System.out.println("finished");
 	}
 }

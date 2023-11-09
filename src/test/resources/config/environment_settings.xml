@@ -1,0 +1,359 @@
+
+<configuration>
+
+	<group name="databasepool">
+		<parameter name="limit.default" 			value="25"/> 
+		<parameter name="limit.monitor" 			value="2"/> 
+		<parameter name="limit.event" 				value="10"/> 
+		<parameter name="limit.identity" 			value="2"/> 
+		<parameter name="limit.archive" 			value="4"/> 
+	</group>
+	
+	<!-- 
+		Configures a database connection for the orchestra runtime database
+	
+		runtime.db.typ		Defines the name of the confgured database
+		runtime.url			JDBC-URL used as database connect string
+		runtime.user		Database user, encrypted as two way password
+		runtime.pwd			Database password, encrypted as two way password
+		runtime.limit		Number of maximum open connections
+		enabled				activates/deactivates the given database connection
+	 -->
+
+	<group name="database" enabled="false">
+		<parameter name="runtime.db.typ" 			value="Derby" choice="ORACLE|MSSQL|MYSQL|MARIADB|Derby|POSTGRESQL" /> 
+		<parameter name="runtime.url" 				value="jdbc:derby:D:/temp/JUNIT_test_database/derby/orc_trunk" />
+		<!-- <parameter name="runtime.url" 			value="jdbc:derby://localhost:1527/orc_trunk" /> -->
+		<parameter name="runtime.user" 				value="0008575445555843494c000669747665627400000008b09b164fbed5a6dd" /> 
+		<parameter name="runtime.pwd" 				value="00084a59585942515752000676796f696668000000108228b4db177f203445e01a4516d93aaa" /> 
+		<parameter name="runtime.limit" 			value="25" /> 
+	</group>
+
+ 	<group name = "database" enabled="false">
+		<parameter name = "runtime.db.typ"			 value = "ORACLE" choice="ORACLE|MSSQL|MYSQL|MARIADB|Derby|POSTGRESQL" />
+		<parameter name = "runtime.url" 			value = "jdbc:oracle:thin:@localhost:1521:XE" />
+		<parameter name = "runtime.user" 			value = "00085448454e5748524300066668767861790000000842a1b4646b367127" />
+		<parameter name = "runtime.pwd" 			value = "00085448454e5748524300066668767861790000000842a1b4646b367127" />
+		<parameter name = "runtime.connect.property" value = "oracle.jdbc.ReadTimeout=60000,oracle.net.CONNECT_TIMEOUT=60000" />
+	</group>
+
+	<group name = "database" enabled="true">
+		  <parameter name="runtime.db.typ" 			value="MYSQL" choice="ORACLE|MSSQL|MYSQL|MARIADB|Derby|POSTGRESQL" /> 
+		  <parameter name="runtime.url" value="jdbc:mysql://DBSERVER:3306/ORCTRUNK_JUNIT_TEST?verifyServerCertificate=false&amp;useSSL=true&amp;serverTimezone=UTC"/>
+		  <parameter name="runtime.user" value="00084e53435a4f4a495700067a73746a736100000010b147a46bfed355a3d7fe04bc0952787b"/> <!-- ORCHESTRATRUNK -->
+		  <parameter name="runtime.pwd" value="00084e53435a4f4a495700067a73746a736100000010b147a46bfed355a3d7fe04bc0952787b"/>  <!-- ORCHESTRATRUNK -->
+		  <parameter name="runtime.limit" 			value="25" /> 
+	</group>
+
+	<group name = "database" enabled="false">
+		  <parameter name="runtime.db.typ" 			value="MSSQL" choice="ORACLE|MSSQL|MYSQL|MARIADB|Derby|POSTGRESQL" />
+		  <parameter name="runtime.url" 			value="jdbc:sqlserver://localhost\ORCHESTRA:1433;DatabaseName=ORCHESTRA4550" /> 
+		  <parameter name="runtime.user" 			value="0008544d5357445254420006666d6a67686900000010c3f995de9533cb218f2f1d615157d0fd" /> 
+		  <parameter name="runtime.pwd" 			value="0008544d5357445254420006666d6a67686900000010c3f995de9533cb218f2f1d615157d0fd" /> 
+	</group>
+
+	<!-- 
+		Define the connection string for the archive database
+	-->
+	<group name = "database"  enabled="false" >
+		  <parameter name="archive.db.typ" 			value="MSSQL" choice="ORACLE|MSSQL|MYSQL|MARIADB" /> 
+		  <parameter name="archive.url" 			value="jdbc:sqlserver://localhost\ORCHESTRA:1433;DatabaseName=ORCHESTRA4550" /> 
+		  <parameter name="archive.user" 			value="0008544d5357445254420006666d6a67686900000010c3f995de9533cb218f2f1d615157d0fd" /> 
+		  <parameter name="archive.pwd" 			value="0008544d5357445254420006666d6a67686900000010c3f995de9533cb218f2f1d615157d0fd" /> 
+	</group>
+
+ 	<group name = "database">
+		  <parameter name="archive.db.typ" 			value="MYSQL" choice="ORACLE|MSSQL|MYSQL|MARIADB" /> 
+		  <parameter name="archive.url" 			value="jdbc:mysql://DBSERVER:3306/ORCTRUNK_JUNIT_TEST?verifyServerCertificate=false&amp;useSSL=true&amp;serverTimezone=UTC" />
+		  <parameter name="archive.user" 			value ="0008504c5346494d54530006626c6a706d640000001011cc4aa782f20289643347ab43dff35e" />
+		  <parameter name="archive.pwd" 			value ="0008504c5346494d54530006626c6a706d640000001011cc4aa782f20289643347ab43dff35e" />
+	</group>
+ 
+	<!-- 
+	  General settings used for all adapter specific adjustments
+	  
+	  sap.jco.enabled		enables/disables the orchestra support for SAP
+	  
+	  sft.keepSession		used in the FTP channel to indicate that the sessions 
+	  						should be kept between adapter calls
+	  
+	  email.keepTransports	used in the EMail channel to indicate that the 
+	  						the sender sessions	should be kept between adapter calls
+	 -->
+
+	<group name="adapter">
+		<parameter name = "sap.jco.enabled" 		value = "false" /> 
+		<parameter name = "sftp.keepSession" 		value = "true" />
+		<parameter name = "email.keepTransports" 	value = "true" />
+	</group>
+
+
+	<!-- 
+	  General settings for the orchestra runtime mode
+	  
+		mode			Defines if this orchestra node is used standalone or in a cluster environment
+		nodeid	 		Defines the unique name of the cluster node
+		node.ip			Defines the IP address of this cluster node
+		node.port		Defines the port that is used for the inter cluster-node protocol
+		node.heartbeat	Defines the time interval in seconds which is used to control cluster nodes
+		deploy.path		Temporary directory that is used during deployment of scenario elements
+	 -->
+
+	<group name = "runtime" >
+		<parameter name = "language" 				value = "EN"/>
+		<parameter name = "mode" 					value = "STANDALONE"  choice="STANDALONE|CLUSTERNODE" />
+		<parameter name = "nodeid" 					value = "ORC"  					/>
+		<parameter name = "node.set"				value = "NODE1,NODE2" 			/>	
+		<parameter name = "deploy.path"				value = "c:/temp/deploypath" 	/>	
+		<parameter name = "clusterswitch" 			value = "on" />
+
+		<parameter name = "node.ip" 				value = "127.0.0.1"  			/>			
+		<parameter name = "node.port" 				value = "9981"  				/>	
+		<parameter name = "node.heartbeat" 			value = "30"  					/>
+		 
+		<parameter name = "local.port" 			value = "8894" 						/>
+		<parameter name = "poolsize" 			value = "5" 						/>
+
+		<parameter name="hopcount"					value="5"/>
+		
+		<parameter name = "communicator.port" 		value = "8895"  />
+		
+		<parameter name = "processmonitoring.mode"		value = "PERSISTENT" 	choice="PERSISTENT|VOLATILE"  />
+
+	</group>
+	
+	<!-- 
+	  General settings for the orchestra communication server
+	  
+		mode						Defines the operation mode of the orchestra communication server
+		master.comsrv.endpoint		Defines the IP address of the orchestra communication server
+		master.comsrv.port			Defines the port of the orchestra communication server
+		master.comsrv.password		Encrypted password to the orchestra master server
+		comsrv.connect.port			Define the port of remote servers that are allowed to connect
+		comsrv.allowed.endpoint		Define the IP address of remote servers that are allowed to connect
+		comsrv.password				Encrypted password used to connect to the orchestra master server
+	 -->
+	 
+	 <group name = "cell" >
+		<parameter name = "mode" 						value = "DISABLED"  choice="MASTER|COMSERVER|DISABLED" />	
+		<parameter name = "master.comsrv.port" 			value = "8899" 						/>
+		<parameter name = "master.comsrv.endpoint" 		value = "192.168.4.101"     			/>
+		<parameter name = "master.comsrv.password" 		value = "000856564457435a514b000668767567677100000018d5d86ef55390bee1964ac4ff3d7404290c441750ef574757"     			/>
+		<parameter name = "comsrv.connect.port" 		value = "8899" 						/>
+		<parameter name = "comsrv.allowed.endpoint" 	value = "localhost"     			/>
+		<parameter name = "comsrv.password" 			value = "000856564457435a514b000668767567677100000018d5d86ef55390bee1964ac4ff3d7404290c441750ef574757"     			/>
+	</group>	
+	
+ 
+	<group name = "messagestore" >
+		<parameter name = "page.type"				value = "DATABASE" choice="DATABASE|FILE" />
+		<parameter name = "page.path"				value = "${os.temp.folder}/page"/>	
+	</group> 
+ 
+	<group name = "logging" >
+	
+		<!-- 
+			Groups: specifies a comma separated list of all configured loggroups
+
+			for each log group add the the following two parameter-elements log.%.path and log.%.filter 
+			whereby "%" is replaced by the name of the log-group
+			  
+			  	<parameter name = "log.%.path"				value = "Place here the path to the log directory" />
+				<parameter name = "log.%.filter"			value = "Add here a regular expression filter to restrict the shown files or leave empty" />
+		 -->
+	
+		<parameter name = "Groups"						value = "tomcat,orchestra" />
+	
+		<parameter name = "log.tomcat.path"				value = "{basepath}/../../../logs" />
+		<parameter name = "log.tomcat.filter"			value = "" />
+
+		<parameter name = "log.orchestra.path"			value = "{java.util.logging.FileHandler.pattern.parent}" />
+		<parameter name = "log.orchestra.filter"		value = "" />
+		
+		
+		<parameter name = "runtime.sql.logging"		value = "false" />
+		<parameter name = "scenario.sql.logging"	value = "false" />
+
+		<!--  
+		   scenario.enabled			true	-	Scenario specific logging enabled
+		   							false   -	Scenario specific logging disabled
+		   							
+		   scenario.config			relative path to the scenario specific configuration logging
+		  -->
+	
+		<parameter name = "scenario.enabled" 		 value = "false" />
+		<parameter name = "scenario.config"      	 value = "config/logging.properties.scenario" />
+	</group>
+
+	<group name = "security" >
+		<parameter name = "db.keystore.password"	value = "0008494b5642434941570006756b6d6c677a00000008fe25b5598b799f1c" />
+	</group>
+
+	<group name = "EventEngine" >
+
+		<!-- 
+			In order to support scenarios with a high throughput, orchestra can be configured
+			to keep events only in memory instead of persisting the events in some persistence medium.
+			The latter case is less efficient since additional resources for the persistence
+			and computation are required. Disable the persistence feature if the loss of evens is acceptable in 
+			case of a server crash. Enable it otherwise.
+			
+			If persistence is enabled, the ement "event.persistence.path" defines the path within the file
+			system where orchestra can place addition persistence information. Per default, this directory
+			is placed within the tomcate installation.
+		 -->
+
+		<parameter name = "event.persistence.mode"     value = "VOLATILE" choice="VOLATILE|DURABLE" />
+		<parameter name = "event.persistence.path"     value = "{basepath}/../../../temp/orchevent"/>
+	
+		<!-- 
+			The parameter process.variables.delta specifies how orchestra deals with
+			local and process variables during event generation. If the parameter is set to delta,
+			only the modified variables are published. Otherwise always the full set of
+			variables is transmitted.
+		 -->
+	
+		<parameter name = "process.mode"  value = "full" choice="full|delta" />
+		
+		<!-- 
+			General settings
+			email.enabled:	Enable (=true) / Disable(=false) the notification of error events to an administrator
+		 -->
+		 		 	
+		<parameter name = "email.enabled"			value = "false" />
+
+		<!-- 
+			email.mode:			DETAILED	All available information is generated into the EMail body
+								NOTIFY		Only a notification is sent that says that errors have occured
+			
+			email.smtphost:		Name or IP address of SMTP-Host (used to send the mail)
+			
+			email.smtpport:		Port of the SMTP-Server
+			
+			email.smtpuser:		Username of the email account. If set to "" the authentification is disabled
+			
+			email.smtppwd:		Password of the email account
+			
+			email.to:			List of all EMail-Recipients
+			
+			email.from:			Sender EMail address
+			
+			email.subject:		Standardtext used for the subject of the mail
+
+			email.limit:		Number of errors that should be cached bevor a email is sent. If this parameter is set 
+			                    to 0 for every event a email is generated	
+			                    
+			email.delay:		Defines the time interval in which orchestra generates emails even if the internal
+			                    cache isn't full
+			                    
+			email.header:		First line of the email body (Only used in email.mode = "DETAILED" )
+			email.seperator:    Separator between to errors  (Only used in email.mode = "DETAILED" )
+			email.footer:		Last line of the email body  (Only used in email.mode = "DETAILED" )
+			
+			email.simple.body:	Definition EMail body        (Only used in email.mode = "NOTIFY" )
+		 -->
+
+		<parameter name = "email.mode"					value = "DETAILED" choice = "DETAILED,NOTIFY" />
+		<parameter name = "email.source"				value = "*" />
+		<parameter name = "email.type"					value = "ERROR" />
+		<parameter name = "email.smtphost"				value = "smtp.emds-ag.dexx" />
+		<parameter name = "email.smtpport"				value = "465" />
+		<parameter name = "email.smtpuser"				value = "bha" />
+		<parameter name = "email.smtppwd"				value = "mf2hd02?" />
+		<parameter name = "email.usessl"				value = "true" />
+		<parameter name = "email.to"					value = "bha@emds-ag.de,wlu@emds-ag.de" />
+		<parameter name = "email.from"					value = "orchestrasupport@emds-ag.de" />
+		<parameter name = "email.subject"				value = "test" />
+		<parameter name = "email.limit"					value = "0" />
+		<parameter name = "email.delay"					value = "10,MINUTE" />
+		<parameter name = "email.attach"				value = "true" />		
+		<parameter name = "email.header"				value = "Dear Administrator,\n\nOrchestra has recognized errors.\n\n" />
+		<parameter name = "email.seperator"				value = "\n==================================================================\n\n" />
+		<parameter name = "email.footer"				value = "\n\nPlease have a look to the monitor for further information." />
+		<parameter name = "email.simple.body"			value = "Dear Administrator, \nOrchestra found $(ERROR.COUNT) errors. For detailed information please have a look at the monitor\n" />
+		
+		<parameter name = "email.process.event"			value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\nActivity: $(TOKEN.ACTIVITY)\nProcess-ID: $(PROCESS.ID)\nProcess-Name: $(PROCESS.NAME)\nScenario: $(SCENARIO.NAME)\nScenario-ID: $(SCENARIO.ID)\nInfo: $(EVENT.INFO)\nDate $(EVENT.OCCURANCE)" />
+		<parameter name = "email.process.token.event"	value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\nActivity: $(TOKEN.ACTIVITY)\nProcess-ID: $(PROCESS.ID)\nProcess-Name: $(PROCESS.NAME)\nScenario: $(SCENARIO.NAME)\nScenario-ID: $(SCENARIO.ID)\nInfo: $(EVENT.INFO)\nDate $(EVENT.OCCURANCE)\nProcess-Vars: $(PROCESS.VARS)\nLocal-Vars: $(LOCAL.VARS) " />
+		<parameter name = "email.variable"				value = "$(VAR.NAME) = [$(VAR.VALUE)]" />
+		<parameter name = "email.system.event"			value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\n$(CONTEXT.SHORTINFO)\n$(CONTEXT.FULLINFO)\n$(CONTEXT.ERRORINFO)" />
+		
+		<parameter name = "file.enabled"			value = "false" />
+		<parameter name = "file.path"				value = "" />
+		<parameter name = "file.type"				value = "ERROR" />
+		<parameter name = "file.source"				value = "*" />
+
+		<!--  
+		  set the value to true, if all scenario specific events should be written
+		  to a scenario specific log file. If you want to customize the log-output change
+		  the parameters 
+
+			scenario.log.maxvarsize				- Specifies the the maximum length of a variable value that is written to the logfile
+			scenario.log.process.event			- Logformat for process-events
+			scenario.log.process.token.event	- Logformat for process-token-events
+			scenario.log.variable				- Logformat for process-variables
+			scenario.log.system.event			- Logformat for system events
+		  
+		 -->
+
+		<parameter name = "scenario.log.maxvarsize"				value = "50" />
+		<parameter name = "scenario.log.enabled"				value = "false" />
+		<parameter name = "scenario.log.process.event"			value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\nActivity: $(TOKEN.ACTIVITY)\nProcess-ID: $(PROCESS.ID)\nProcess-Name: $(PROCESS.NAME)\nScenario: $(SCENARIO.NAME)\nScenario-ID: $(SCENARIO.ID)\nInfo: $(EVENT.INFO)\nDate $(EVENT.OCCURANCE)" />
+		<parameter name = "scenario.log.process.token.event"	value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\nActivity: $(TOKEN.ACTIVITY)\nProcess-ID: $(PROCESS.ID)\nProcess-Name: $(PROCESS.NAME)\nScenario: $(SCENARIO.NAME)\nScenario-ID: $(SCENARIO.ID)\nInfo: $(EVENT.INFO)\nDate $(EVENT.OCCURANCE)\nProcess-Vars: $(PROCESS.VARS)\nLocal-Vars: $(LOCAL.VARS) " />
+		<parameter name = "scenario.log.variable"				value = "$(VAR.NAME) = [$(VAR.VALUE)]" />
+		<parameter name = "scenario.log.system.event"			value = "Type: $(EVENT.TYPE)\nSource: $(EVENT.ORIGINATOR)\nAction: $(EVENT.ACTION)\n$(CONTEXT.SHORTINFO)\n$(CONTEXT.FULLINFO)\n$(CONTEXT.ERRORINFO)" />
+		
+	</group>
+	
+	
+	
+	<group name = "Http" >
+		
+		<!--  set the following parameter to enabled if you want to set a static host name . 
+			  Otherwise the host name is determined by lookup to the TCP naming system
+		-->
+		
+		<parameter name = "servlet.hostname"			value = "localhost"  enabled="false" />
+	
+		<parameter name = "servlet.port.http"			value = "8019" />
+		<parameter name = "servlet.port.https"			value = "8443" />
+		<parameter name = "servlet.port.https.auth"		value = "8444" />
+	
+		<parameter name = "WebDavMaster.enabled"		value = "true" />
+		<parameter name = "WebDavMaster.allowed"		value = "true" />
+		<parameter name = "WebDavMaster.auth"			value = "1" />
+		<parameter name = "WebDavPassword.Page"			value = "Not configured" />
+		
+	</group>
+
+
+	<group name="queue">	
+		<parameter name = "delay" 						value = "10" /> 
+		<parameter name = "unit" 						value = "SECOND" />
+		<parameter name = "maxRetry" 					value = "3" />
+		<parameter name = "maxDelay" 					value = "-1" />
+		<parameter name = "maxDelayUnit" 				value = "SECOND" />
+		<parameter name = "warnlevel.ext.communication" value ="ERROR" />
+	</group>
+	
+	<group name="longtimearchive">
+		<parameter name = "mode" 					value = "inactive" choice="active|inactive" /> 
+		<parameter name = "file.path" 				value = "c:/temp/longtimearchive" /> 
+		<parameter name = "automaticDeletion" 		value = "true" /> 
+		<parameter name = "compressAfter"			value = "7,DAY" />
+		<parameter name = "compressLimit"			value = "24"    />
+	</group>
+	
+	<!-- 
+  	General settings for the helth check tool.
+	 
+	 	timeout:			 	Time in milliseconds until enforced interrupt of one check execution
+	 							   
+	 	number_of_records:	 	The number of records to display from result of causer command(e.g. causer command would return 1000 records. In resultlist only 10 are shown.)
+	
+	 -->
+
+	<group name="healthCheck">
+ 		<parameter name ="timeout" value="3000"/>
+        <parameter name="number_of_records" value="10"/>
+	</group>	
+</configuration>

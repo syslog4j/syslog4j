@@ -13,6 +13,7 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConf
 * @version $Id: SSLTCPNetSyslogServerConfigIF.java,v 1.1 2009/03/29 17:38:58 cvs Exp $
 */
 public interface SSLTCPNetSyslogServerConfigIF extends TCPNetSyslogServerConfigIF {
+/* WL: SSL
 	public String getKeyStore();	
 	public void setKeyStore(String keyStore);
 	
@@ -24,4 +25,5 @@ public interface SSLTCPNetSyslogServerConfigIF extends TCPNetSyslogServerConfigI
 	
 	public String getTrustStorePassword();
 	public void setTrustStorePassword(String trustStorePassword);
+ */
 }

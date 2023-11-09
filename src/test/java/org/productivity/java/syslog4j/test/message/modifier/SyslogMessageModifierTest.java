@@ -55,14 +55,14 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 		
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
 		SyslogIF syslog = getSyslog(protocol);
 		syslog.getConfig().removeAllMessageModifiers();
 		
-		ArrayList list = new ArrayList();
+		List<SyslogMessageModifierIF> list = new ArrayList<SyslogMessageModifierIF>();
 		((AbstractSyslogConfig) syslog.getConfig()).setMessageModifiers(list);
 		
 		// UPPER SET UP
@@ -96,7 +96,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 	public void testPrefixSuffix() {
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -212,7 +212,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 	public void testSequential() {
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -275,7 +275,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 		
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -339,7 +339,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 		
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -394,7 +394,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 			assertTrue(true);
 		}
 
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -526,7 +526,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 	public void testMac() {
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -603,7 +603,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 	public void testMacWithKeys() {
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();
@@ -680,7 +680,7 @@ public class SyslogMessageModifierTest extends AbstractNetSyslog4jTest {
 
 		// PREPARE
 		
-		List events = new ArrayList();
+		List<String> events = new ArrayList<String>();
 		String message = null;
 		
 		String protocol = getClientProtocol();

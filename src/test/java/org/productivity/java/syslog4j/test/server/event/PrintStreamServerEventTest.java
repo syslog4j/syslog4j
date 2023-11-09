@@ -71,10 +71,11 @@ public class PrintStreamServerEventTest extends TestCase {
 		try {
 			File f = File.createTempFile("syslog4j-test",".txt");
 			
-			eventHandler = new FileSyslogServerEventHandler(f.getPath());
+			long fileLen = 10 * 1024; // 10 KB
+			eventHandler = new FileSyslogServerEventHandler(f.getPath(), false, fileLen, 2);
 			eventHandler.event(null,server,null,event);
 
-			eventHandler = new FileSyslogServerEventHandler(f.getPath(),true);
+			eventHandler = new FileSyslogServerEventHandler(f.getPath(), true, fileLen, 2);
 			eventHandler.event(null,server,null,event);
 
 		} catch (Exception e) {

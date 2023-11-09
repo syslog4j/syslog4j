@@ -4,9 +4,11 @@ import java.io.PrintStream;
 import java.net.SocketAddress;
 import java.util.Date;
 
+import org.productivity.java.syslog4j.impl.message.structured.StructuredSyslogMessage;
 import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.productivity.java.syslog4j.server.SyslogServerSessionEventHandlerIF;
+import org.productivity.java.syslog4j.server.impl.event.structured.StructuredSyslogServerEvent;
 import org.productivity.java.syslog4j.util.SyslogUtility;
 
 /**
@@ -19,11 +21,20 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 * 
 * @author &lt;syslog4j@productivity.org&gt;
 * @version $Id: PrintStreamSyslogServerEventHandler.java,v 1.7 2010/11/28 22:07:57 cvs Exp $
+*
+* History
+* =======
+* 13.09.2017 WLI ORC-228 Create rolling log files for Syslog Server
 */
 public class PrintStreamSyslogServerEventHandler implements SyslogServerSessionEventHandlerIF {
+	
 	private static final long serialVersionUID = 6036415838696050746L;
 	
 	protected PrintStream stream = null;
+	
+	protected PrintStreamSyslogServerEventHandler () {
+		
+	}
 	
 	public PrintStreamSyslogServerEventHandler(PrintStream stream) {
 		this.stream = stream;
@@ -41,8 +52,42 @@ public class PrintStreamSyslogServerEventHandler implements SyslogServerSessionE
 		String date = (event.getDate() == null ? new Date() : event.getDate()).toString();
 		String facility = SyslogUtility.getFacilityString(event.getFacility());
 		String level = SyslogUtility.getLevelString(event.getLevel());
+		String msg = event.getMessage();
+//		System.out.println("handle event: " + msg); // WL
+
+		if (event instanceof StructuredSyslogServerEvent) {
+			try {
+				StructuredSyslogMessage structuredMsg = StructuredSyslogMessage.fromString(msg);
+				StringBuilder builder = new StringBuilder(msg.length() + 20);
+				builder.append(date);
+				builder.append(' ');
+				builder.append(level);
+				String processId = structuredMsg.getProcessId();
+				if (processId != null) {
+					builder.append(' ');
+					builder.append(processId);
+				}
+				String messageId = structuredMsg.getMessageId();
+				if (messageId != null) {
+					builder.append(' ');
+					builder.append(messageId);
+				}
+				
+				builder.append(' ');
+				builder.append(structuredMsg.getMessage());
+
+				println(builder.toString());
+				return;
+			} 
+			catch (Exception e) {
+			}
+		}
 		
-		this.stream.println("{" + facility + "} " + date + " " + level + " " + event.getMessage());
+		println("{" + facility + "} " + date + " " + level + " " + msg);
+	}
+
+	protected void println(String text) {
+		this.stream.println(text);
 	}
 
 	public void exception(Object session, SyslogServerIF syslogServer, SocketAddress socketAddress, Exception exception) {
@@ -54,6 +99,9 @@ public class PrintStreamSyslogServerEventHandler implements SyslogServerSessionE
 	}
 
 	public void destroy(SyslogServerIF syslogServer) {
-		return;
+		if (stream != null) {
+			stream.close();
+			stream = null;
+		}
 	}
 }

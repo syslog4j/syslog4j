@@ -15,6 +15,8 @@ import org.productivity.java.syslog4j.server.impl.net.AbstractNetSyslogServerCon
 public class UDPNetSyslogServerConfig extends AbstractNetSyslogServerConfig {
 	private static final long serialVersionUID = -2005919161187055486L;
 
+	private int maxMessageLength = SYSLOG_BUFFER_SIZE;
+	
 	public UDPNetSyslogServerConfig() {
 		//
 	}
@@ -34,5 +36,13 @@ public class UDPNetSyslogServerConfig extends AbstractNetSyslogServerConfig {
 
 	public Class getSyslogServerClass() {
 		return UDPNetSyslogServer.class;
+	}
+
+	public int getMaxMessageLength() {
+		return maxMessageLength;
+	}
+	
+	public void setMaxMessageLength(int len) {
+		this.maxMessageLength = len;
 	}
 }

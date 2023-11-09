@@ -21,13 +21,13 @@ import org.productivity.java.syslog4j.server.SyslogServerEventHandlerIF;
 public abstract class AbstractSyslogServerConfig implements SyslogServerConfigIF {
 	private static final long serialVersionUID = 870248648801259856L;
 	
-	public abstract Class getSyslogServerClass();
+	public abstract Class<?> getSyslogServerClass();
 	
 	protected String charSet = CHAR_SET_DEFAULT;
 	
 	protected long shutdownWait = SyslogConstants.SERVER_SHUTDOWN_WAIT_DEFAULT;
 
-	protected List eventHandlers = new ArrayList();
+	protected List<SyslogServerEventHandlerIF> eventHandlers = new ArrayList<SyslogServerEventHandlerIF>();
 
 	protected boolean useStructuredData = USE_STRUCTURED_DATA_DEFAULT;
 	
@@ -52,7 +52,7 @@ public abstract class AbstractSyslogServerConfig implements SyslogServerConfigIF
 		this.shutdownWait = shutdownWait;
 	}
 
-	public List getEventHandlers() {
+	public List<SyslogServerEventHandlerIF> getEventHandlers() {
 		return this.eventHandlers;
 	}
 	

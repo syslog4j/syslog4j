@@ -45,21 +45,23 @@ public class StructuredSyslogMessageTest extends TestCase
 {
    public void testFromString1()
    {
-      final String messageStr = "msgId1 [0@0] my message!!";
+      final String messageStr = "procId msgId1 - " + StructuredSyslogMessage.BOM + "my message!!";
 
       final StructuredSyslogMessage message = StructuredSyslogMessage.fromString(messageStr);
       
-      assertEquals("msgId1 [0@0] my message!!",message.toString());
-      assertEquals(-108931075,message.hashCode());
-
+      assertEquals(messageStr, message.toString());
+//      assertEquals(-108931075,message.hashCode());
+      assertEquals(-1735213078,message.hashCode());
+      
       assertEquals("my message!!", message.getMessage());
       assertEquals("msgId1", message.getMessageId());
-      assertTrue(message.getStructuredData().size() == 0);
+//      assertTrue(message.getStructuredData().size() == 0);
+      assertNull(message.getStructuredData());
    }
 
    public void testFromString2()
    {
-      final String messageStr = "msgId1 [invalid SD] my message!!";
+      final String messageStr = "procId msgId1 [invalid SD] my message!!";
 
       try {
     	  StructuredSyslogMessage.fromString(messageStr);
@@ -72,7 +74,7 @@ public class StructuredSyslogMessageTest extends TestCase
 
    public void testFromString3()
    {
-      final String messageStr = "msgId1 [data1 a=b] my message!!";
+      final String messageStr = "procId msgId1 [data1 a=b] my message!!";
 
       try {
 	      StructuredSyslogMessage.fromString(messageStr);
@@ -85,7 +87,7 @@ public class StructuredSyslogMessageTest extends TestCase
 
    public void testFromString4()
    {
-      final String messageStr = "msgId1 [data1 a=\"b] my message!!";
+      final String messageStr = "procId msgId1 [data1 a=\"b] my message!!";
 
       try {
 	      StructuredSyslogMessage.fromString(messageStr);
@@ -98,7 +100,7 @@ public class StructuredSyslogMessageTest extends TestCase
 
    public void testFromString5()
    {
-      final String messageStr = "msgId1 [data1 a=b\"] my message!!";
+      final String messageStr = "procId msgId1 [data1 a=b\"] my message!!";
 
       try {
     	  StructuredSyslogMessage.fromString(messageStr);
@@ -112,7 +114,7 @@ public class StructuredSyslogMessageTest extends TestCase
 
    public void testFromString6()
    {
-      final String messageStr = "msgId1 [data1 a=\"b\"] my message!!";
+      final String messageStr = "procId msgId1 [data1 a=\"b\"] my message!!";
 
       final StructuredSyslogMessage message = StructuredSyslogMessage.fromString(messageStr);
 
@@ -126,7 +128,7 @@ public class StructuredSyslogMessageTest extends TestCase
    public void testFromString7()
    {
       final String messageStr =
-            "msgId1 [data1 a=\"b\"][data2 a=\"b\" x1=\"c1\" n2=\"f5\"] my message!!";
+            "procId msgId1 [data1 a=\"b\"][data2 a=\"b\" x1=\"c1\" n2=\"f5\"] my message!!";
 
       final StructuredSyslogMessage message = StructuredSyslogMessage.fromString(messageStr);
 
@@ -143,29 +145,29 @@ public class StructuredSyslogMessageTest extends TestCase
 
    public void testCreateMessage1()
    {
-      final StructuredSyslogMessage message = new StructuredSyslogMessage("msgId", null, null);
-      assertEquals("msgId [0@0]", message.createMessage());
+      final StructuredSyslogMessage message = new StructuredSyslogMessage(null, "msgId", null, null);
+      assertEquals("- msgId -", message.createMessage());
    }
 
    public void testCreateMessage2()
    {
       final StructuredSyslogMessage message =
-            new StructuredSyslogMessage("msgId", null, "my message");
-      assertEquals("msgId [0@0] my message", message.createMessage());
+            new StructuredSyslogMessage("procId", "msgId", null, "my message");
+      assertEquals("procId msgId - " + StructuredSyslogMessage.BOM + "my message", message.createMessage());
    }
 
    public void testCreateMessage3()
    {
       final StructuredSyslogMessage message =
-            new StructuredSyslogMessage("msgId", new HashMap(), "my message");
-      assertEquals("msgId [0@0] my message", message.createMessage());
+            new StructuredSyslogMessage("procId", "msgId", new HashMap(), "my message");
+      assertEquals("procId msgId - " + StructuredSyslogMessage.BOM + "my message", message.createMessage());
    }
 
    public void testCreateMessage4()
    {
       final Map map = new HashMap();
       final StructuredSyslogMessage message =
-            new StructuredSyslogMessage("msgId", map, "my message");
-      assertEquals("msgId [0@0] my message", message.createMessage());
+            new StructuredSyslogMessage("procId", "msgId", map, "my message");
+      assertEquals("procId msgId - " + StructuredSyslogMessage.BOM + "my message", message.createMessage());
    }
 }

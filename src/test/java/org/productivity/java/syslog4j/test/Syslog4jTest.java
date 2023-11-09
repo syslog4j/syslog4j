@@ -3,7 +3,8 @@ package org.productivity.java.syslog4j.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.productivity.java.syslog4j.test.log4j.Log4jSyslog4jTest;
+import org.junit.Ignore;
+//import org.productivity.java.syslog4j.test.log4j.Log4jSyslog4jTest;
 import org.productivity.java.syslog4j.test.message.UDPPCISyslogMessageTest;
 import org.productivity.java.syslog4j.test.message.modifier.SyslogMessageModifierTest;
 import org.productivity.java.syslog4j.test.message.modifier.SyslogMessageModifierVerifyTest;
@@ -17,7 +18,6 @@ import org.productivity.java.syslog4j.test.misc.SyslogMainTests;
 import org.productivity.java.syslog4j.test.misc.SyslogParameterTest;
 import org.productivity.java.syslog4j.test.misc.SyslogVersionTest;
 import org.productivity.java.syslog4j.test.multiple.MultipleSyslogCreateTest;
-import org.productivity.java.syslog4j.test.net.BackLogTCPNetSyslog4jTest;
 import org.productivity.java.syslog4j.test.net.CommandLineNetSyslog4jTest;
 import org.productivity.java.syslog4j.test.net.FreshConnectionIntervalTest;
 import org.productivity.java.syslog4j.test.net.MaxActiveSocketsTest;
@@ -33,12 +33,19 @@ import org.productivity.java.syslog4j.test.net.UDPNetSyslog4jTest;
 import org.productivity.java.syslog4j.test.server.event.PrintStreamServerEventTest;
 import org.productivity.java.syslog4j.test.server.event.ServerEventTest;
 import org.productivity.java.syslog4j.test.split.SplitSyslogTest;
-import org.productivity.java.syslog4j.test.unix.UnixSyslogTest;
-import org.productivity.java.syslog4j.test.unix.socket.UnixSocketSyslogTest;
+//import org.productivity.java.syslog4j.test.unix.UnixSyslogTest;
+//import org.productivity.java.syslog4j.test.unix.socket.UnixSocketSyslogTest;
 import org.productivity.java.syslog4j.test.util.OSDetectUtilityTest;
 import org.productivity.java.syslog4j.test.util.SyslogUtilityTest;
-import org.productivity.java.syslog4j.util.OSDetectUtility;
+//import org.productivity.java.syslog4j.util.OSDetectUtility;
 
+
+/**
+ * Ignore Parent-Testsuite, otherwise you also have to comment tests which should not 
+ * be executed here out
+ *
+ */
+@Ignore @Deprecated
 public class Syslog4jTest {
 	public static Test suite() {
 		TestSuite testSuite = new TestSuite("Syslog4j TestSuite");
@@ -67,17 +74,17 @@ public class Syslog4jTest {
 		testSuite.addTestSuite(MultipleSyslog4jTest.class);
 		testSuite.addTestSuite(NonPersistentTCPNetSyslog4jTest.class);
 		testSuite.addTestSuite(UDPPCISyslogMessageTest.class);
-		testSuite.addTestSuite(Log4jSyslog4jTest.class);
-		testSuite.addTestSuite(BackLogTCPNetSyslog4jTest.class);
+//		testSuite.addTestSuite(Log4jSyslog4jTest.class);
+//		testSuite.addTestSuite(BackLogTCPNetSyslog4jTest.class);
 		testSuite.addTestSuite(SyslogServerSessionTest.class);
 
 		testSuite.addTestSuite(SyslogMessageModifierTest.class);
 		testSuite.addTestSuite(SyslogMessageModifierVerifyTest.class);
 
-		if (OSDetectUtility.isUnix()) {
-			testSuite.addTestSuite(UnixSyslogTest.class);
-			testSuite.addTestSuite(UnixSocketSyslogTest.class); 
-		}
+//		if (OSDetectUtility.isUnix()) {
+//			testSuite.addTestSuite(UnixSyslogTest.class);
+//			testSuite.addTestSuite(UnixSocketSyslogTest.class); 
+//		}
 		
 		testSuite.addTestSuite(MaxQueueSizeTest.class);
 		testSuite.addTestSuite(MaxActiveSocketsTest.class);

@@ -1,7 +1,12 @@
 --------------------------------------------------------------------------
 Document: Syslog4j CHANGELOG.txt
-Version:  $Id: CHANGELOG.txt,v 1.74 2011/01/23 20:49:09 cvs Exp $
+Version:  $Id: CHANGELOG.txt,v 1.74 2023/11/09 09:15:00 cvs Exp $
 URL:      http://www.syslog4j.org/
+--------------------------------------------------------------------------
+Version 1.0.0 (11/09/2023)
++ Fixed a bunch of errors
++ Removed support of native unix sockets
++ Added injection of Syslog4jSSLContextBuilder
 --------------------------------------------------------------------------
 Version 0.9.46 (1/23/2011)
 + Added Syslog.setSuppressRuntimeExceptions(boolean) and

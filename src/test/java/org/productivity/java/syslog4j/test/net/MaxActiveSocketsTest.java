@@ -46,10 +46,11 @@ public class MaxActiveSocketsTest extends TestCase {
 		serverConfig.addEventHandler(c);
 		
 		SyslogServer.createThreadedInstance("tcp_maxactivesockets",serverConfig);
-		
+		SyslogUtility.sleep(500); // wait for server to startup
+
 		TCPNetSyslogConfigIF config = new TCPNetSyslogConfig();
 		config.setPort(8888);
-			
+/*			
 		SyslogIF syslog1 = Syslog.createInstance("tcp_maxactivesockets1",config);
 		syslog1.info("test1");
 		syslog1.flush();
@@ -67,6 +68,21 @@ public class MaxActiveSocketsTest extends TestCase {
 
 		syslog1.shutdown();
 		SyslogUtility.sleep(200);
+*/
+		SyslogIF syslog1 = Syslog.createInstance("tcp_maxactivesockets1",config);
+		SyslogIF syslog2 = Syslog.createInstance("tcp_maxactivesockets2",config);
+		SyslogIF syslog3 = Syslog.createInstance("tcp_maxactivesockets3",config);
+		syslog1.info("test1");
+		syslog2.info("test2");
+		syslog3.info("test3");
+		
+		SyslogUtility.sleep(500); // wait that blocked threads can send their messages
+		
+		syslog1.flush(); // waits until the thread is terminated and calls shutdown
+		syslog2.flush();
+		syslog3.flush();
+		
+		SyslogUtility.sleep(500); // wait for server to receive the messages
 
 		Syslog.destroyInstance("tcp_maxactivesockets1");
 		Syslog.destroyInstance("tcp_maxactivesockets2");

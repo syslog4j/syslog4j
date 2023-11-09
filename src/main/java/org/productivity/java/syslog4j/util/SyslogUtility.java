@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.productivity.java.syslog4j.Syslog4jSSLContextBuilder;
 import org.productivity.java.syslog4j.SyslogCharSetIF;
 import org.productivity.java.syslog4j.SyslogConstants;
 import org.productivity.java.syslog4j.SyslogRuntimeException;
@@ -204,5 +205,19 @@ public final class SyslogUtility implements SyslogConstants {
 		} catch (InterruptedException ie) {
 			//
 		}
-	}	
+	}
+	
+	private static Syslog4jSSLContextBuilder sslContextBuilder;
+	
+	public static void setSSLContextBuilder(Syslog4jSSLContextBuilder contextBuilder) {
+		sslContextBuilder = contextBuilder;
+	}
+	
+	public static Syslog4jSSLContextBuilder getSSLContextBuilder() {
+		if (sslContextBuilder == null) {
+			sslContextBuilder = new Syslog4jSSLContextBuilderImpl();
+		}
+		
+		return sslContextBuilder;
+	}
 }

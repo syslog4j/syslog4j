@@ -9,7 +9,19 @@ import org.productivity.java.syslog4j.impl.net.tcp.TCPNetSyslogConfig;
 import org.productivity.java.syslog4j.test.net.base.AbstractNetSyslog4jTest;
 
 public class MultipleSyslog4jTest extends AbstractNetSyslog4jTest {
+	
+	public void setUp() {
+		
+//	WLI: MultipleSyslog4jTest run into an error in setupMultipleConfig when calling Syslog.getInstance("tcp"):
+//		Syslog protocol "tcp" not defined
+		Syslog.shutdown();
+		Syslog.initialize();
+		
+		super.setUp();
+	}
+	
 	protected void setupMultipleConfig() {
+		
 		((AbstractNetSyslogConfig) Syslog.getInstance("tcp").getConfig()).setPort(TEST_PORT);
 		
 		MultipleSyslogConfig config = new MultipleSyslogConfig();

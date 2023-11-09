@@ -1,13 +1,14 @@
 package org.productivity.java.syslog4j.server.impl;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.productivity.java.syslog4j.SyslogCharSetIF;
 import org.productivity.java.syslog4j.SyslogRuntimeException;
@@ -30,68 +31,55 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 * 
 * @author &lt;syslog4j@productivity.org&gt;
 * @version $Id: AbstractSyslogServer.java,v 1.12 2011/01/11 05:11:13 cvs Exp $
+* 
+* History
+* =======
+* 02.07.2020 WLI ORC-3824 the method Sessions.removeSocket() didn't remove the Socket from the map 
+*                resulting in an OutOfMemoryError after the syslog server is running for some time.
 */
 public abstract class AbstractSyslogServer implements SyslogServerIF {
-	public static class Sessions extends HashMap {
-		private static final long serialVersionUID = -4438949276263772580L;
+	
+	public static class Sessions {
 		
-		public static final Object syncObject = new Object();
+		private ConcurrentHashMap<Socket, Map<SyslogServerEventHandlerIF, Object>> sessions = new ConcurrentHashMap<>();
+
+		public int size() {
+			return sessions.size();
+		}
 
 		public void addSocket(Socket socket) {
-			synchronized(syncObject) {
-				put(socket,new HashMap());
-			}
-		}
-		
-		public Iterator getSockets() {
-			if (size() > 0) {
-				return keySet().iterator();
-				
-			} else {
-				return null;
-			}
-		}
-
-		public void addSession(Socket socket, SyslogServerEventHandlerIF eventHandler, Object session) {
-			synchronized(syncObject) {
-				Map handlerMap = getHandlerMap(socket);
-				
-				if (handlerMap == null) {
-					handlerMap = new HashMap();
-				}
-				
-				handlerMap.put(eventHandler,session);
-			}
+			sessions.put(socket,new HashMap<SyslogServerEventHandlerIF, Object>());
 		}
 
 		public void removeSocket(Socket socket) {
-			synchronized(syncObject) {
-				Map handlerMap = getHandlerMap(socket);
-				
-				if (handlerMap != null) {
-					handlerMap.clear();
+			sessions.remove(socket); // ORC-3824
+		}
+		
+		public void closeAll() { // ORC-3824
+			for (Socket socket: sessions.keySet()) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					// intentionally left blank because closAll is called on shutdown only
 				}
 			}
+			sessions.clear();
 		}
-
-		protected Map getHandlerMap(Socket socket) {
-			Map handlerMap = null;
+		
+		public void addSession(Socket socket, SyslogServerEventHandlerIF eventHandler, Object session) {
+			Map<SyslogServerEventHandlerIF, Object> handlerMap = sessions.get(socket);
 			
-			if (containsKey(socket)) {
-				handlerMap = (Map) get(socket);
+			if (handlerMap == null) {
+				handlerMap = new HashMap<SyslogServerEventHandlerIF, Object>();
+				sessions.put(socket,handlerMap);
 			}
 			
-			return handlerMap;
+			handlerMap.put(eventHandler,session);
 		}
 
 		public Object getSession(Socket socket, SyslogServerEventHandlerIF eventHandler) {
-			synchronized(syncObject) {
-				Map handlerMap = getHandlerMap(socket);
-				
-				Object session = handlerMap.get(eventHandler);
-				
-				return session;
-			}
+			Map<SyslogServerEventHandlerIF, Object> handlerMap = sessions.get(socket);
+			return handlerMap.get(eventHandler);
 		}
 	}
 	
@@ -188,7 +176,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 	
 	public static void handleInitialize(SyslogServerIF syslogServer) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);
@@ -203,7 +191,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 
 	public static void handleDestroy(SyslogServerIF syslogServer) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);
@@ -218,7 +206,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 
 	public static void handleSessionOpen(Sessions sessions, SyslogServerIF syslogServer, Socket socket) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);
@@ -244,7 +232,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 
 	public static void handleSessionClosed(Sessions sessions, SyslogServerIF syslogServer, Socket socket, boolean timeout) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);
@@ -276,7 +264,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 
 	protected static void handleEvent(Sessions sessions, SyslogServerIF syslogServer, Socket socket, SocketAddress socketAddress, SyslogServerEventIF event) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);
@@ -313,7 +301,7 @@ public abstract class AbstractSyslogServer implements SyslogServerIF {
 	}
 
 	public static void handleException(Object session, SyslogServerIF syslogServer, SocketAddress socketAddress, Exception exception) {
-		List eventHandlers = syslogServer.getConfig().getEventHandlers();
+		List<?> eventHandlers = syslogServer.getConfig().getEventHandlers();
 		
 		for(int i=0; i<eventHandlers.size(); i++) {
 			SyslogServerEventHandlerIF eventHandler = (SyslogServerEventHandlerIF) eventHandlers.get(i);

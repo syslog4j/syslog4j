@@ -1,14 +1,13 @@
 package org.productivity.java.syslog4j.server.impl.net.tcp;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Iterator;
 
 import javax.net.ServerSocketFactory;
 
@@ -18,6 +17,8 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.productivity.java.syslog4j.server.impl.AbstractSyslogServer;
 import org.productivity.java.syslog4j.util.SyslogUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 * TCPNetSyslogServer provides a simple threaded TCP/IP server implementation.
@@ -28,20 +29,87 @@ import org.productivity.java.syslog4j.util.SyslogUtility;
 * 
 * @author &lt;syslog4j@productivity.org&gt;
 * @version $Id: TCPNetSyslogServer.java,v 1.23 2010/11/28 22:07:57 cvs Exp $
+* 
+* History
+* =======
+* 14.09.2017 WLI At 03.03.2017 Marjan Stankovic added ServerSocket.setNeedClientAuth(true).
+*                Therefore the client sent a certificate which then caused an Authentication failure.
+* 02.07.2020 WLI ORC-3824 removed synchronization on sessions object.
 */
 public class TCPNetSyslogServer extends AbstractSyslogServer {
+	
+	protected static Logger logger = LoggerFactory.getLogger( "com.soffxt.syslog" );
+
 	public static class TCPNetSyslogSocketHandler implements Runnable {
 		protected SyslogServerIF server = null;
 		protected Socket socket = null;
 		protected Sessions sessions = null;
+//		protected BufferedReader br;
+		protected BufferedInputStream bis;
 		
 		public TCPNetSyslogSocketHandler(Sessions sessions, SyslogServerIF server, Socket socket) {
 			this.sessions = sessions;
 			this.server = server;
 			this.socket = socket;
 			
-			synchronized(this.sessions) {
-				this.sessions.addSocket(socket);
+			this.sessions.addSocket(socket); // ORC-3824
+		}
+				
+		public String readLine() throws IOException {
+			int first = bis.read();
+			if (first < 0)
+				return null;
+			
+			if (Character.isDigit(first)) {
+				int digit = first - '0';
+				int buflen = digit;
+				int ch = bis.read();
+				while (Character.isDigit(ch)) {
+					digit = ch - '0';
+					buflen = buflen * 10 + digit;
+					ch = bis.read();
+				}
+				byte [] buf = new byte[buflen];
+				int rest = buflen;
+				int off = 0;
+				while (rest > 0) {
+					int rcnt = bis.read(buf, off, rest);
+					if (rcnt < 0)
+						break;
+					off += rcnt;
+					rest -= rcnt;
+				}
+				String result = new String(buf, 0, off, "UTF-8");
+				if (result.endsWith("\n")) {
+					if (result.endsWith("\r\n")) {
+						result = result.substring(0, result.length() - 2);
+					}
+					else result = result.substring(0, result.length() - 1);
+				}
+				return result;
+			}
+			else {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream(500);
+				bout.write(first);
+//				buf[0] = (byte)(first & 0xFF);
+				int cnt = 1;
+				int b = bis.read();
+				int last = -1;
+				while (b > 0 && b != 10) {
+//					buf[cnt++] = (byte)(b & 0xFF);
+					bout.write(b);
+					cnt++;
+					last = b;
+					b = bis.read();
+				}
+				if (last == 13) {
+					cnt--;
+				}
+				
+				byte [] buf = bout.toByteArray();
+				
+				String rest = new String(buf, 0, cnt, "UTF-8");
+				return rest;
 			}
 		}
 		
@@ -49,36 +117,39 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 			boolean timeout = false;
 			
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-
-				String line = br.readLine();
+//				br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+				bis = new BufferedInputStream(this.socket.getInputStream());
+				String line = readLine(); // WL: br.readLine();
 				
 				if (line != null) {
 					AbstractSyslogServer.handleSessionOpen(this.sessions,this.server,this.socket);
 				}
 				
 				while (line != null && line.length() != 0) {
+					logger.debug("Read line: {}", line);
 					SyslogServerEventIF event = createEvent(this.server.getConfig(),line,this.socket.getInetAddress());
 					
 					AbstractSyslogServer.handleEvent(this.sessions,this.server,this.socket,event);
 
-					line = br.readLine();
+					line = readLine(); // WL: br.readLine();
 				}
 				
 			} catch (SocketTimeoutException ste) {
+				logger.warn("timeout when reading syslog socket", ste); // WL ORC-8935 (spelling correction).
 				timeout = true;
 				
 			} catch (SocketException se) {
 				AbstractSyslogServer.handleException(this.sessions,this.server,this.socket.getRemoteSocketAddress(),se);
 				
-				if ("Socket closed".equals(se.getMessage())) {
-					//
+				if ("socket closed".equalsIgnoreCase(se.getMessage())) {
+					// System.out.println(se.getMessage());
 					
 				} else {
-					//
+					logger.warn("reading syslog socket failed", se); // WL
 				}
 				
 			} catch (IOException ioe) {
+				logger.warn("reading syslog failed", ioe); // WL
 				AbstractSyslogServer.handleException(this.sessions,this.server,this.socket.getRemoteSocketAddress(),ioe);
 			}
 			
@@ -86,7 +157,7 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 				AbstractSyslogServer.handleSessionClosed(this.sessions,this.server,this.socket,timeout);
 				
 				this.sessions.removeSocket(this.socket);
-				
+
 				this.socket.close();
 				
 			} catch (IOException ioe) {
@@ -136,17 +207,7 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 				this.serverSocket.close();
 			}
 			
-			synchronized(this.sessions) {
-				Iterator i = this.sessions.getSockets();
-	
-				if (i != null) {
-					while(i.hasNext()) {
-						Socket s = (Socket) i.next();
-						
-						s.close();
-					}
-				}
-			}
+			sessions.closeAll(); // ORC-3824
 			
 		} catch (IOException ioe) {
 			//
@@ -158,13 +219,13 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 		}
 	}
 
-	protected ServerSocketFactory getServerSocketFactory() throws IOException {
+	protected ServerSocketFactory getServerSocketFactory() throws Exception {
 		ServerSocketFactory serverSocketFactory = ServerSocketFactory.getDefault();
 		
 		return serverSocketFactory;
 	}
 	
-	protected ServerSocket createServerSocket() throws IOException {
+	protected ServerSocket createServerSocket() throws Exception {
 		ServerSocket newServerSocket = null;
 		
 		ServerSocketFactory factory = getServerSocketFactory();
@@ -182,7 +243,12 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 				newServerSocket = factory.createServerSocket(this.syslogServerConfig.getPort(),this.tcpNetSyslogServerConfig.getBacklog());				
 			}
 		}
-		
+/*	WLI: Marjan Stankovic added the following 4 lines. Therefore the client sent a certificate which then caused an Authentication failure.
+		// mutual authentication is required
+		if (newServerSocket instanceof SSLServerSocket) {
+			((SSLServerSocket) newServerSocket).setNeedClientAuth( true );
+		}
+*/		
 		return newServerSocket;
 	}
 
@@ -196,6 +262,10 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 
 		} catch (IOException ioe) {
 			throw new SyslogRuntimeException(ioe);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SyslogRuntimeException(e);
 		}
 
 		handleInitialize(this);
@@ -211,6 +281,7 @@ public class TCPNetSyslogServer extends AbstractSyslogServer {
 				if (this.tcpNetSyslogServerConfig.getMaxActiveSockets() > 0 && this.sessions.size() >= this.tcpNetSyslogServerConfig.getMaxActiveSockets()) {
 					if (this.tcpNetSyslogServerConfig.getMaxActiveSocketsBehavior() == TCPNetSyslogServerConfigIF.MAX_ACTIVE_SOCKETS_BEHAVIOR_REJECT) {
 						try {
+//							logger.info("Server: reject socket"); // WL
 							socket.close();
 							
 						} catch (Exception e) {
